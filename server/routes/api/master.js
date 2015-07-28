@@ -40,10 +40,15 @@ router.get("/:entity", Auth.isLoggedIn, function(req, res){
     res.json(Error.insufficientPermissions("Unable to get "+req.params.entity));
   }
   else{
-    if((userPermissions && userPermissions.allOwners!=true) && entity.exemptFromOwnership!=true && !entity.requiresAuthentication){
-      query["createuser"]=user._id;
-    }
-    console.log(query);
+    // if((userPermissions && userPermissions.allOwners!=true) && entity.exemptFromOwnership!=true && !entity.requiresAuthentication){
+    //   query["createuser"]=user._id;
+    // }
+
+    //add filter for approved items
+    if((userPermissions && userPermissions.approve!=true && entity.exemptFromApproval!=true)
+        || (entity.requiresAuthentication!=true && entity.exemptFromApproval!=true && !user)){
+      query["approved"]=true;
+    }    
     MasterController.get(req.query, query, entity, function(results){
       res.json(results || {});
     });

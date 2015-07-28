@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 console.log(Schema);
 
 var commentSchema = new Schema({
-  commenttext: Buffer,
+  content: Buffer,
   pagetext: Buffer,
   dateline: {
     type: Date,
@@ -22,6 +22,10 @@ var commentSchema = new Schema({
   createuser: {
     type: Schema.ObjectId,
     ref: 'user'
+  },
+  approved:{
+    type: Boolean,
+    default: true
   }
 });
 

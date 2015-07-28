@@ -4,6 +4,7 @@ module.exports = {
       model: require("../models/user"),
       populates: "role",
       exemptFromOwnership: false,
+      exemptFromApproval: true,
       sort: {
         username: 1
       },
@@ -15,6 +16,7 @@ module.exports = {
       model: require("../models/project"),
       populates: "userid",
       exemptFromOwnership: false,
+      exemptFromApproval: false,
       sort: {
         dateline: -1
       },
@@ -26,6 +28,7 @@ module.exports = {
       model: require("../models/article"),
       populates: "userid",
       exemptFromOwnership: false,
+      exemptFromApproval: false,
       sort: {
         dateline: -1
       },
@@ -37,6 +40,7 @@ module.exports = {
       model: require("../models/comment"),
       populates: "userid",
       exemptFromOwnership: false,
+      exemptFromApproval: false,
       sort: {
         dateline: -1
       },
@@ -48,6 +52,7 @@ module.exports = {
       model: require("../models/userrole"),
       populates: "",
       exemptFromOwnership: true,
+      exemptFromApproval: true,
       sort: {
         name: 1
       },
@@ -58,6 +63,7 @@ module.exports = {
       model: require("../models/feature"),
       populates: "",
       exemptFromOwnership: true,
+      exemptFromApproval: true,
       sort: {
         name: 1
       },
@@ -68,6 +74,7 @@ module.exports = {
       model: require("../models/projectcategory"),
       populates: "",
       exemptFromOwnership: true,
+      exemptFromApproval: true,
       sort: {
         name: 1
       },
@@ -78,6 +85,7 @@ module.exports = {
       model: require("../models/product"),
       populates: "",
       exemptFromOwnership: true,
+      exemptFromApproval: true,
       sort: {
         name: 1
       },

@@ -63,7 +63,7 @@
         <li ng-repeat="comment in comments">
           <img src="" />
           <h3>{{comment.userid.username}}</h3><span> - {{comment.createdate | date:'dd MMM yy HH:mm'}}</span>
-          <div class="" ng-bind-html="getCommentText(comment.commenttext)">
+          <div class="" ng-bind-html="getCommentText(comment.content)">
 
           </div>
         </li>

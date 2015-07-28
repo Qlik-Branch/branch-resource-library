@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var projectSchema = new Schema({
   title: String,
-  pagetext: String,
+  content: String,
   short_description: String,
   thumbnail: Buffer,
   overview: String,
@@ -16,6 +16,10 @@ var projectSchema = new Schema({
   git_user: String,
   threadid: String,
   taglist: Buffer,
+  approved: {
+    type: Boolean,
+    default: true
+  },
   userid: {
     type: Schema.ObjectId,
     ref: 'users'

@@ -596,8 +596,8 @@
     }
 
     $scope.getPageText = function(){
-      if($scope.projects[0] && $scope.projects[0].pagetext){
-        return marked($scope.projects[0].pagetext);
+      if($scope.projects[0] && $scope.projects[0].content){
+        return marked($scope.projects[0].content);
       }
     };
 
