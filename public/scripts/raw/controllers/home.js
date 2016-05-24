@@ -8,7 +8,7 @@ app.controller("homeController", ["$rootScope","$scope", "$resource", "$state", 
   
   $rootScope.headTitle = "Welcome to Qlik Branch";
   $rootScope.metaKeys = "Branch, Qlik Branch, Qlik Sense, Qlik, Data Analytics, Data Visualization, QlikView, Developers, APIs, Github, Open Source, Developer Relations, Innovation";
-  $rootScope.metaDesc = "Qlik Branch is a game-changing platform for web developersusing Qlik's APIs to accelerate innovation in bringing the best ideas to market. Rooted in open source philosophy, all projects are freely distributed and modified, allowing faster collaboration and innovation."
+  $rootScope.metaDesc = "Qlik Branch is a game-changing platform for web developers using Qlik's APIs to accelerate innovation in bringing the best ideas to market. Rooted in open source philosophy, all projects are freely distributed and modified, allowing faster collaboration and innovation."
   Feature.get({}, function(result){
     if(resultHandler.process(result)){
       $scope.features = result.data;
