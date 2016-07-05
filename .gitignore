@@ -13,3 +13,4 @@ config.js
 credentials.json
 public/attachments/*
 !public/attachments/default
+server/controllers/mailText.js

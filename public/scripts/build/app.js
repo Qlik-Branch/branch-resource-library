@@ -3253,7 +3253,14 @@
             }, function(result) {
               if(resultHandler.process(result)){
                 userManager.refresh();
-                window.location = "#!" + $scope.returnUrl || "/";
+                var pattern = /^https?:\/\//i;
+                if (pattern.test($scope.returnUrl))
+                {
+                  window.location = $scope.returnUrl;
+                }
+                else{
+                  window.location = "#!" + $scope.returnUrl || "/";  
+                }
               }
               else{
                 $scope.authLoading = false;
