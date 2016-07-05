@@ -40,7 +40,14 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
       if(resultHandler.process(result)){
         userManager.refresh();
         searchExchange.clear(true);
-        window.location = "#!" + $scope.returnUrl || "/";
+        var pattern = /^https?:\/\//i;
+        if (pattern.test($scope.returnUrl))
+        {
+          window.location = $scope.returnUrl;
+        } else {
+          window.location = "#!" + $scope.returnUrl || "/";
+        }
+
       }
       else{
         $scope.authLoading = false;
@@ -66,7 +73,14 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
           }, function(result) {
             if(resultHandler.process(result)){
               userManager.refresh();
-              window.location = "#!" + $scope.returnUrl || "/";
+              var pattern = /^https?:\/\//i;
+              if (pattern.test($scope.returnUrl))
+              {
+                window.location = $scope.returnUrl;
+              }
+              else{
+                window.location = "#!" + $scope.returnUrl || "/";  
+              }
             }
             else{
               $scope.authLoading = false;

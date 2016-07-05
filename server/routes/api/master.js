@@ -38,6 +38,10 @@ var get = require("./get")
 
 GitHub.authenticate({type: "token", token: Config.git.token });
 
+router.get("/bucket", function(req, res) {
+  res.json(Config.s3);
+});
+
 //This route is for getting a list of results for the specified entity
 //url parameters can be used to add filtering
 //Requires "read" permission on the specified entity

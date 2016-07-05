@@ -1,7 +1,10 @@
 app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", "notifications", "picklistService", function ($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler, notifications, picklistService) {
     var Blog = $resource("api/blog/:blogId", { blogId: "@blogId" });
+    var Image = $resource("api/resource/image/:url", {url: "@url"});
+
     $scope.pageSize = 20;
     $scope.query = {};
+    $scope.simplemde;
     
     
     $scope.blogLoading = $stateParams.blogId != "new";
@@ -13,6 +16,13 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
     var defaultSelection;
 
     $scope.blogTypes;
+
+    $rootScope.bucket;
+
+    $resource("api/bucket").get({}, function(result) {
+        $rootScope.bucket = result.bucket;
+    });
+
     $rootScope.headTitle = "Blog: Qlik Branch";
     $rootScope.metaKeys = "Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
     $rootScope.metaDesc = "The Qlik Branch Blog is a place for developers to read helpful and interesting articles about using our APIs as well as news and communications about anything relevant to developers."
@@ -49,7 +59,7 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
                         $scope.blogs = result.data;
                     }
                     if ($state.current.name == "blogs.addedit") {
-                        $("#blogContent").code(_arrayBufferToBase64(result.data[0].content.data));
+                        $scope.simplemde.value(_arrayBufferToBase64(result.data[0].content.data));
                     }
                     $rootScope.headTitle = result.data[0].title + " : Qlik Branch Blog";
                     $rootScope.metaKeys = result.data[0].tags + ", Branch, Qlik Branch, Blog, Articles, Updates, News, Qlik Sense, Qlik, Open Source";
@@ -128,7 +138,7 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
             errors.push("Please select a Type");
         }
         //Verify the blog has content
-        if ($("#blogContent").code().length == 0 || $("#blogContent").code().length == 12) {  //this is not necessarily robust. a length of 12 appears to be an empty input
+        if ($scope.simplemde.value().length == 0 || $scope.simplemde.value().length == 12) {  //this is not necessarily robust. a length of 12 appears to be an empty input
             errors.push("Please add some content");
         }
         //If there are errors we need to notify the user
@@ -145,13 +155,12 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
 
     $scope.saveBlog = function () {
         $scope.blogLoading = true;
-        //temp fix for special chars not formatting in summernote
-        $scope.blogs[0].content = $("#blogContent").code().replace(/®/g, "&reg;").replace(/¢/g, "&cent;").replace(/£/g, "&pound;").replace(/¥/g, "&yen;").replace(/€/g, "&euro;").replace(/©/g, "&copy;");
+        $scope.blogs[0].content = $scope.simplemde.value();
         $scope.blogs[0].plaintext = cleanUpContent($scope.blogs[0].content);
         var data = {
             standard: $scope.blogs[0],
             special: {
-                content: $scope.blogs[0].content
+              markdown: true
             }
         };
         if ($scope.dirtyThumbnail) {
@@ -177,11 +186,16 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
     $scope.getBlogContent = function (text) {
         if (text && text.data) {
             var buffer = _arrayBufferToBase64(text.data);
-            return buffer;
+            return marked(buffer);
         }
         else {
             return "";
         }
+    };
+
+    $scope.addImageToMarkdown = function(url) {
+        var imageContent = "![](" + url + ")";
+        $scope.simplemde.codemirror.replaceSelection(imageContent);
     };
 
     $scope.$on("$stateChangeSuccess", function (event, toState, toParams, fromState, fromParams) {
@@ -204,9 +218,32 @@ app.controller("blogController", ["$rootScope","$scope", "$resource", "$state", 
             });
         }
         else if ($state.current.name == "blogs.addedit") {
-            $("#blogContent").summernote({
-                height: 400
+            $scope.simplemde = new SimpleMDE({ element: $("#blogContent")[0],
+                placeholder: "Blogs content uses markdown. If you would like to add an image to your markdown you can upload the image below, then click the image to add." });
+
+            var dropzone = new Dropzone('#blogImages', {
+                previewTemplate: document.querySelector('#preview-template').innerHTML,
+                addRemoveLinks: true,
+                parallelUploads: 2,
+                thumbnailHeight: 120,
+                thumbnailWidth: 120,
+                maxFilesize: 3,
+                filesizeBase: 1000
             });
+
+            dropzone.on("success", function(file, response) {
+                file.url = response.url;
+                file.previewElement.addEventListener("click", function() {
+                    $scope.addImageToMarkdown(response.url);
+                })
+            });
+
+            dropzone.on("removedfile", function(file) {
+                Image.delete({url: file.url}, function(response) {
+                    console.log("Removed", file.url);
+                });
+            });
+
             picklistService.getPicklistItems("Blog Type", function (items) {
                 $scope.blogTypes = items;
             });

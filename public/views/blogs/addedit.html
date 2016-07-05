@@ -32,11 +32,18 @@
       </div>
       <div class="col-md-12">
         <label>Content:</label>
-        <div class="">
-          <div id="blogContent" class="">
-
+        <textarea id="blogContent"></textarea>
+      </div>
+      <div class="col-md-12">
+        <label>Images:</label>
+        <form action="/api/blog/image"
+              class="dropzone needsclick" id="blogImages" enctype="multipart/form-data">
+          <div class="dz-message needsclick">
+            Drop files here or click to upload.
           </div>
-        </div>
+        </form>
+      </div>
+      <div class="col-md-12">
         <button class="button-outline-fill" type="button" name="button" ng-click="validateNewBlogData()">{{blogs[0]._id ? 'Save' : 'Submit for approval'}}</button>
       </div>
     </div>

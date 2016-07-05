@@ -3,14 +3,12 @@ var MasterController = require("../../controllers/master"),
     Error = require("../../controllers/error"),
     Notifier = require("../../controllers/notifier"),
     Mailer = require("../../controllers/emailer"),
-    ImageHandler = require("summernote-imagehandler"),
     fs = require('fs'),
-    attachmentDir = require("../../../attachmentDir"),
     envconfig = require("../../../config"),
     entities = require("../entityConfig"),
     mongoose = require("mongoose"),
     epoch = require("milli-epoch"),
-    AWS = require("aws-sdk");
+    s3 = require("../../s3/s3"),
     atob = require("atob");
 
 module.exports = function(req, res){
@@ -89,74 +87,18 @@ module.exports = function(req, res){
     }
 
     if(data.special){
-      //we have image data to deal with
-      if(!fs.existsSync(attachmentDir+record._id.toString())){
-        fs.mkdirSync(attachmentDir+record._id.toString());
-      }
-      if(data.special.markdown) {
-        var linkStart = "//s3.amazonaws.com/" + envconfig.s3.bucket + "/";
-        var markdown = record.content;
-        var first = markdown.indexOf(linkStart);
-        var count = 0;
-        while (first >= 0) {
-          var second = markdown.indexOf(")", first);
-          first += linkStart.length;
-          var previousFile = markdown.substring(first, second);
-          // the assumption here is that previous will be
-          // attachments/tmp/<file>
-          if (previousFile.indexOf("/tmp/") >= 0) {
-            var newFile = previousFile.replace("/tmp/", "/" + record._id.toString() + "/");
-            moveS3File(previousFile, newFile);
-            markdown = markdown.substring(0,first) + newFile + markdown.substring(second);
+      Promise.all(
+          [checkForMarkdown(data.special, record),
+           checkForImage(data.special, record, req.params.entity),
+           checkForThumbnail(data.special, record, req.params.entity)]
+      ).then(() => {
+        MasterController.save(query, record, entities[req.params.entity], function(newrecord){
+          if(!newrecord.errCode){
+            //send an notification to all subscribers of the item
+            Notifier.sendUpdateNotification(newrecord._id, newrecord, req.params.entity);
           }
-          first = markdown.indexOf(linkStart,first+1);
-        }
-        record.content = markdown;
-      }
-      if(data.special.content) {
-        var imageHandler = new ImageHandler(data.special.content);
-        for (var i = 0; i < imageHandler.files.length; i++) {
-          var contentFile = attachmentDir + record._id.toString() + "/content_" + i.toString() + "." + imageHandler.files[i].extension;
-          fs.createReadStream(imageHandler.files[i].file).pipe(fs.createWriteStream(contentFile));
-          var contentUrl = "/attachments/" + record._id.toString() + "/content_" + i.toString() + "." + imageHandler.files[i].extension;
-
-          imageHandler.setSrc(imageHandler.files[i].id, contentUrl);
-        }
-        imageHandler.cleanupFiles();
-        record.content = imageHandler.getSource();
-      }
-      if(data.special.image){
-        //write the image to disk and store the Url
-        imageBuffer = new Buffer(data.special.image.data, 'base64');
-        fs.writeFile(attachmentDir+record._id.toString()+"/image.png", imageBuffer, function(err){
-          if(err){
-            console.log(err);
-          }
+          res.json(newrecord);
         });
-        record.image = "/attachments/"+record._id.toString()+"/image.png";
-      }
-      else{
-        record.image = "/attachments/default/"+req.params.entity+".png";
-      }
-      if(data.special.thumbnail){
-        //write the image to disk and store the Url
-        imageBuffer = new Buffer(data.special.thumbnail.data, 'base64');
-        fs.writeFile(attachmentDir+record._id.toString()+"/thumbnail.png", imageBuffer, function(err){
-          if(err){
-            console.log(err);
-          }
-        });
-        record.thumbnail = "/attachments/"+record._id.toString()+"/thumbnail.png";
-      }
-      else{
-        record.thumbnail = "/attachments/default/"+req.params.entity+".png";
-      }
-      MasterController.save(query, record, entities[req.params.entity], function(newrecord){
-        if(!newrecord.errCode){
-          //send an notification to all subscribers of the item
-          Notifier.sendUpdateNotification(newrecord._id, newrecord, req.params.entity);
-        }
-        res.json(newrecord);
       });
     }
     else{
@@ -198,6 +140,92 @@ module.exports = function(req, res){
   }
 };
 
+var checkForMarkdown = (special, record) => {
+  return new Promise((resolve,reject) => {
+    if(!special.markdown) {
+      resolve();
+    } else {
+      moveMarkdownImages(record.content, record._id)
+        .then((content) => {
+          record.content = content;
+          resolve();
+        });
+    }
+  });
+};
+
+var moveMarkdownImages = (content, identifier, resolver) => {
+  if (!resolver) {
+    return new Promise((resolve) => {
+      moveMarkdownImages(content, identifier, resolve);
+    });
+  } else {
+    var linkStart = "//s3.amazonaws.com/" + envconfig.s3.bucket + "/attachments/tmp/";
+    var markdown = content;
+    var first = markdown.indexOf(linkStart);
+    if (first < 0) {
+      resolver(markdown);
+    } else {
+      var second = markdown.indexOf(")", first);
+      first += linkStart.length - 16;
+      var previousFile = markdown.substring(first, second);
+      // the assumption here is that previous will be
+      // attachments/tmp/<file>
+      var newFile = previousFile.replace("/tmp/", "/" + identifier + "/");
+      s3.moveFile(previousFile, newFile)
+        .then(() => {
+          markdown = markdown.substring(0,first) + newFile + markdown.substring(second);
+          moveMarkdownImages(markdown, identifier, resolver);
+        }).catch((err) => {
+          console.log("Error moving image", err);
+          resolver(markdown);
+        });
+    }
+  }
+};
+
+var checkForImage = (special, record, entity) => {
+  return new Promise((resolve) => {
+    record.image = "/attachments/default/"+entity+".png";
+    if(!special.image) {
+      resolve()
+    } else {
+      var imageBuffer = new Buffer(special.image.data, 'base64');
+      var imageKey = record._id.toString() + "/image.png";
+      s3.uploadFile(imageKey, imageBuffer)
+        .then((result) => {
+          record.image = result.url;
+          resolve();
+        })
+        .catch((err) => {
+          console.log("Error uploading image", err);
+          resolve();
+        });
+    }
+  });
+};
+
+var checkForThumbnail = (special, record, entity) => {
+  return new Promise((resolve) => {
+    record.thumbnail = "/attachments/default/"+entity+".png";
+    if(!special.thumbnail) {
+      resolve()
+    } else {
+      var imageBuffer = new Buffer(special.thumbnail.data, 'base64');
+      var thumbnailKey = record._id.toString() + "/thumbnail.png";
+      s3.uploadFile(thumbnailKey, imageBuffer)
+        .then((result) => {
+          record.thumbnail = result.url;
+          resolve();
+        })
+        .catch((err) => {
+          console.log("Error uploading thumbnail", err);
+          resolve();
+        });
+    }
+  });
+}
+
 function hasProps(obj){
   for (var key in obj){
     if(obj.hasOwnProperty(key)){
@@ -206,21 +234,3 @@ function hasProps(obj){
   }
   return false;
 }
-
-var moveS3File = function(previousFile,newFile) {
-  var previousWithBucket = envconfig.s3.bucket + "/" + previousFile;
-  var params = {Bucket: envconfig.s3.bucket, CopySource: previousWithBucket, Key: newFile };
-  var s3obj = new AWS.S3();
-  s3obj.copyObject(params, function(err, result) {
-    if(err) {
-      console.error("Issue with S3 Copy", err);
-    } else {
-      var deleteParams = {Bucket: envconfig.s3.bucket, Key: previousFile};
-      s3obj.deleteObject(deleteParams, function(err, result) {
-        if (err) {
-          console.error("Issue with S3 Delete", err);
-        }
-      });
-    }
-  });
-};

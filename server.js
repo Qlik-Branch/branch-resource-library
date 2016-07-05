@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
     app = express(),
     passport = require('passport'),
     expressSession = require('express-session'),
+    MongoStore = require('connect-mongo')(expressSession),
     AWS = require("aws-sdk"),
     bodyParser = require('body-parser');
 
@@ -66,7 +67,7 @@ app.use('/attachments', express.static(__dirname + '/public/attachments'));
 app.use("/qsocks", express.static(__dirname + "/node_modules/qsocks"));
 app.use("/configs", express.static(__dirname + "/public/configs"));
 
-app.use(expressSession({secret: 'mySecretKey'}));
+app.use(expressSession({secret: 'mySecretKey', store: new MongoStore({ mongooseConnection: mongoose.connection})}));
 app.use(passport.initialize());
 app.use(passport.session());
 

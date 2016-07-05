@@ -1,6 +1,5 @@
 var Error = require('./error'),
-    AWS = require("aws-sdk"),
-    envconfig = require("../../config");
+    s3 = require("../s3/s3");;
 
 module.exports = {
   get: function(query, parsedQuery, entity, callbackFn){
@@ -156,35 +155,16 @@ module.exports = {
         callbackFn.call(null, Error.errorDeleting(err.message));
       }
       else{
-        callbackFn.call(null, result);
-      }
-    });
-
-    var key = "attachments/" + query._id + "/";
-    var s3 = new AWS.S3();
-    var params = {
-      Bucket: envconfig.s3.bucket,
-      Prefix: key
-    };
-
-    s3.listObjects(params, function(err, data) {
-
-      if (data) {
-        params = {Bucket: envconfig.s3.bucket};
-        params.Delete = {Objects:[]};
-
-        data.Contents.forEach(function(content) {
-          params.Delete.Objects.push({Key: content.Key});
-        });
-
-        s3.deleteObjects(params, function(err, data) {
-          params = {Bucket: envconfig.s3.bucket, Key: key};
-          s3.deleteObject(params, function(err) {
-            if (err) {
-              console.log("Error deleting attachments", err);
-            }
+        s3.deleteEntityFiles(query._id)
+          .catch((err) => {
+            console.log("Error deleting attachments", err);
           })
-        });
+          .then(() => {
+            // we're still sending back a null error below because even
+            // though we had an issue removing attachments the entity
+            // was properly removed.
+            callbackFn.call(null, result);
+          });
       }
     });
   }

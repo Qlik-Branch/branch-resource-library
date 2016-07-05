@@ -8,7 +8,7 @@
             </div>
           </a>
           <div class="card-avatar">
-              <img src="/attachments/{{blog.userId}}/thumbnail.png" onError="this.src='/attachments/default/userprofile.png'" alt="">
+              <img src="//s3.amazonaws.com/{{bucket}}/attachments/{{blog.userId}}/thumbnail.png" onError="this.src='/attachments/default/userprofile.png'" alt="">
           </div>
           <a href="#!blog/{{blog.blogId}}">
             <h4 class="card-heading">{{blog.title}}</h4>

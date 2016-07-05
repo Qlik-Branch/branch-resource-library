@@ -281,11 +281,11 @@ app.directive("searchResults", ["$resource", "$state", "$stateParams", "userMana
                   }
                   $("#"+$attrs.id).find("._count_label")[0].innerHTML = "Showing " + ($scope.pageTop+1) + " - " + $scope.pageBottom + " of " + $scope.total + " results";
                   if($scope.resultsTemplate){
-                    $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
+                    $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min, bucket: $scope.$root.bucket});
                   }
                   else{
                     $scope.resultsTemplateCallback = function(){
-                      $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min});
+                      $("#"+$attrs.id).find("._list")[0].innerHTML = $scope.resultsTemplate.getHTML({items:items, terms: terms, totals: totals, max:max, min:min, bucket: $scope.$root.bucket});
                     }
                   }
                   if($scope.pagingTemplate){

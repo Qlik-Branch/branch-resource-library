@@ -1,8 +1,7 @@
-var envconfig = require("../../../config"),
-    fs = require("fs"),
+var fs = require("fs"),
     formidable = require("formidable"),
     uuid = require("uuid"),
-    AWS = require("aws-sdk");
+    s3 = require("../../s3/s3");
 
 module.exports = function(req, res){
     var form = new formidable.IncomingForm();
@@ -12,28 +11,16 @@ module.exports = function(req, res){
     form.parse(req, function(err, fields, files) {
         fs.readFile(files.file.path,{}, function(err, data) {
             var extension = files.file.name.substring(files.file.name.lastIndexOf("."));
-            uploadFile(data,extension,function(err, result) {
-                if (err) {
-                    console.log("Error Uploading to S3", err);
-                    res.status(500);
-                    res.json("There was an issue uploading the file");
-                } else {
-                    res.json(result);
-                }
+            var key = "tmp/" + uuid.v4() + extension;
+            s3.uploadFile(key, data)
+              .then((result) => {
+                  res.json(result);
+              }).catch((err) => {
+                  console.log("Error Uploading to S3", err);
+                  res.status(500);
+                  res.json("There was an issue uploading the file");
             });
         });
     });
 };
 
-function uploadFile(data, extension, next) {
-    var key = "attachments/tmp/" + uuid.v4() + extension;
-
-    var s3obj = new AWS.S3({params: {Bucket: envconfig.s3.bucket, Key: key}});
-    s3obj.upload({Body: data})
-        .send(function(err, result) {
-            var result = {
-                url: "//s3.amazonaws.com/" + envconfig.s3.bucket + "/" + key
-            }
-            next(err, result);
-        });
-};
