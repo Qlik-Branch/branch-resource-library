@@ -6,6 +6,7 @@ var spamCheck = require('spam-check');
 var spamchecker = require('known-spam-emails');
 var mongoose = require("mongoose");
 var Mailer = require("../emailer");
+const marketo = require("../../marketo/marketo")
 
 module.exports = function(passport, User, UserProfile){
 
@@ -81,7 +82,8 @@ module.exports = function(passport, User, UserProfile){
 							Mailer.sendMail("signup", "user", newUserProfile, function(){
 
 							});
-							next()
+              marketo.syncUser(newUserProfile)
+                  .then(() => { next() })
 						});
 
           })

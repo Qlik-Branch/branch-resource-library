@@ -69,7 +69,10 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
           Signup.save({
             username: $scope.username,
             password: $scope.password,
-            email: $scope.email
+            email: $scope.email,
+            company: $scope.company,
+            country: $scope.country,
+            fullname: $scope.fullname
           }, function(result) {
             if(resultHandler.process(result)){
               userManager.refresh();

@@ -22,6 +22,9 @@
       <h2>Signup</h2>
       <form ng-submit="signup()">
         <input class="form-control" ng-model="username" placeholder="Username" required>
+        <input class="form-control" ng-model="company" placeholder="Company" required>
+        <input class="form-control" ng-model="fullname" placeholder="Full Name" required>
+        <input class="form-control" ng-model="country" placeholder="Country" required>
         <input class="form-control" ng-model="email" placeholder="Email" type="email" required>
         <input class="form-control" ng-model="password" placeholder="Password" type="password" required>
         <input class="form-control" placeholder="Confirm Password" type="password" pattern="{{password}}" required>

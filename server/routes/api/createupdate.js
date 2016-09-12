@@ -7,6 +7,7 @@ var MasterController = require("../../controllers/master"),
     envconfig = require("../../../config"),
     entities = require("../entityConfig"),
     mongoose = require("mongoose"),
+    marketo = require("../../marketo/marketo"),
     epoch = require("milli-epoch"),
     s3 = require("../../s3/s3"),
     atob = require("atob");
@@ -97,7 +98,8 @@ module.exports = function(req, res){
             //send an notification to all subscribers of the item
             Notifier.sendUpdateNotification(newrecord._id, newrecord, req.params.entity);
           }
-          res.json(newrecord);
+          checkForMarketo(entity, newrecord)
+              .then(() => { res.json(newrecord) })
         });
       });
     }
@@ -131,7 +133,8 @@ module.exports = function(req, res){
 
           }
         }
-        res.json(newrecord);
+        checkForMarketo(entity, newrecord)
+            .then(() => { res.json(newrecord) })
       });
     }
   }
@@ -139,6 +142,16 @@ module.exports = function(req, res){
     res.json(Error.notLoggedIn());
   }
 };
+
+const checkForMarketo = (entity, record) => {
+  return new Promise((resolve,reject) => {
+    if(entity !== "userprofile") {
+      resolve()
+    } else {
+      marketo.syncUser(record).then(() => { resolve() })
+    }
+  })
+}
 
 var checkForMarkdown = (special, record) => {
   return new Promise((resolve,reject) => {
