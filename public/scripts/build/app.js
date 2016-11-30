@@ -233,11 +233,22 @@
     $locationProvider.hashPrefix('!');
   }]);
 
-  app.run(['$rootScope',function($rootScope) {
+
+  //GA modification zhu
+  app.run(['$rootScope','$location', '$window',
+    function($rootScope,$location,$window) {
+    $window.ga('create', 'UA-87754759-1', 'auto');
     $rootScope.$on('$stateChangeSuccess', function() {
+      $window.ga('send', 'pageview', $location.path());
       document.body.scrollTop = document.documentElement.scrollTop = 0;
     });
   }]);
+
+  // app.run(['$rootScope',function($rootScope) {
+  //   $rootScope.$on('$stateChangeSuccess', function() {
+  //     document.body.scrollTop = document.documentElement.scrollTop = 0;
+  //   });
+  // }]);
 
   if (!window.WebSocket){
     window.location = "#!badbrowser";
