@@ -126,6 +126,11 @@ app.get("/projects/showthread.php", function(req, res, next){
   });
 });
 
+// Fancy url to re-direct to slack invite page
+app.get('/slack', function(req, res, next) {
+  res.redirect('http://qlikbranch-slack-invite.herokuapp.com/')
+})
+
 app.use('/api', apiRoutes);
 app.use('/git', gitRoutes);
 app.use('/auth', authRoutes);
