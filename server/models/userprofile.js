@@ -57,7 +57,8 @@ var userProfileSchema = new Schema({
   createdate_num: Number,
   lastvisit: Date,
   lastvisit_num: Number,
-  resetHash: String
+  reset_hash: String,
+  reset_hash_time: Number
 });
 
 module.exports = mongoose.model('userprofiles', userProfileSchema);

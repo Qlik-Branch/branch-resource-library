@@ -83,7 +83,7 @@ router.post('/reset', function(req, res){
 });
 
 router.get('/reset/:hash', function(req, res){
-  UserProfile.findOne({ resetHash: req.params.hash }, function(err, userProfile) {
+  UserProfile.findOne({ reset_hash: req.params.hash }, function(err, userProfile) {
     if (err) {
       res.json(Error.custom(err))
     } else if (userProfile) {
@@ -95,7 +95,7 @@ router.get('/reset/:hash', function(req, res){
 })
 
 router.post('/reset/:hash', function(req, res){
-  UserProfile.findOne({ resetHash: req.params.hash, username: req.body.username }, function(err, userProfile) {
+  UserProfile.findOne({ reset_hash: req.params.hash, username: req.body.username }, function(err, userProfile) {
     if (err) {
       res.json(Error.custom(err))
     } else if (userProfile) {
@@ -109,7 +109,7 @@ router.post('/reset/:hash', function(req, res){
             if(err){
               res.json(Error.custom(err))
             } else {
-              userProfile.resetHash = null
+              userProfile.reset_hash = null
               userProfile.save(function(err) {
                 if(err) {
                   res.json(Error.custom(err))

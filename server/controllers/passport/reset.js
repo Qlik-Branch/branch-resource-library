@@ -44,7 +44,7 @@ module.exports = function(req, res, next){
     function(next) {
 
       // set the user's local credentials
-      shared.userProfile.resetHash = shared.randomHash
+      shared.userProfile.reset_hash = shared.randomHash
 
       // save the user
       shared.userProfile.save(function(err) {
@@ -64,8 +64,8 @@ module.exports = function(req, res, next){
         to: shared.userProfile.email,
         subject: 'Qlik Branch Password reset',
         html: `<p>You are receiving this because a request was made to reset the password for your Branch account.</p>
-         <p>Please click <a href="${config.baseUrl}/#!/reset/${shared.userProfile.resetHash}">here</a> or copy and paste the link below to change your password</p>
-         <p>${config.baseUrl}/#!/reset/${shared.userProfile.resetHash}</p>`
+         <p>Please click <a href="${config.baseUrl}/#!/reset/${shared.userProfile.reset_hash}">here</a> or copy and paste the link below to change your password</p>
+         <p>${config.baseUrl}/#!/reset/${shared.userProfile.reset_hash}</p>`
       }
 
       // send email with new password
