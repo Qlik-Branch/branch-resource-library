@@ -64,8 +64,8 @@ module.exports = function(req, res, next){
         to: shared.userProfile.email,
         subject: 'Qlik Branch Password reset',
         html: `<p>You are receiving this because a request was made to reset the password for your Branch account.</p>
-         <p>Please click <a href="${config.baseUrl}/auth/reset/${shared.userProfile.resetHash}">here</a> or copy and paste the link below to change your password</p>
-         <p>${config.baseUrl}/auth/reset/${shared.userProfile.resetHash}</p>`
+         <p>Please click <a href="${config.baseUrl}/#!/reset/${shared.userProfile.resetHash}">here</a> or copy and paste the link below to change your password</p>
+         <p>${config.baseUrl}/#!/reset/${shared.userProfile.resetHash}</p>`
       }
 
       // send email with new password

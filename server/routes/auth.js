@@ -82,6 +82,53 @@ router.post('/reset', function(req, res){
   })
 });
 
+router.get('/reset/:hash', function(req, res){
+  UserProfile.findOne({ resetHash: req.params.hash }, function(err, userProfile) {
+    if (err) {
+      res.json(Error.custom(err))
+    } else if (userProfile) {
+      res.json({})
+    } else {
+      res.json(Error.custom("The reset link you have provided does not exist"))
+    }
+  })
+})
+
+router.post('/reset/:hash', function(req, res){
+  UserProfile.findOne({ resetHash: req.params.hash, username: req.body.username }, function(err, userProfile) {
+    if (err) {
+      res.json(Error.custom(err))
+    } else if (userProfile) {
+      User.findOne({'_id': userProfile._id}, function(err, user){
+        if(err) {
+          res.json(Error.custom(err))
+        } else if (user) {
+          user.salt = user.createSalt(req.body.password)
+          user.password = user.hashPassword(req.body.password, user.salt)
+          user.save(function(err){
+            if(err){
+              res.json(Error.custom(err))
+            } else {
+              userProfile.resetHash = null
+              userProfile.save(function(err) {
+                if(err) {
+                  res.json(Error.custom(err))
+                } else {
+                  res.json({})
+                }
+              })
+            }
+          });
+        } else {
+          res.json(Error.custom("The password reset function was not completed"))
+        }
+      })
+    } else {
+      res.json(Error.custom("The username entered does not match your reset link."))
+    }
+  })
+})
+
 router.post('/change', function(req, res){
   if(req.user){
     User.findOne({'_id': req.user._id}, function(err, user){
