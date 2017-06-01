@@ -5,6 +5,14 @@ var express = require('express'),
     passport = require('passport');
 const UserProfile = require('../models/userprofile')
 
+twentyFourHoursAgo = () => {
+  // constant for a day in milliseconds
+  // 1000 milliseconds * 60 seconds * 60 minutes * 24 hours
+  const aDayAgo = 1000*60*60*24
+  let current = new Date(Date.now())
+  return current.getTime() - aDayAgo
+}
+
 router.post('/login', function(req, res, next){
   passport.authenticate('local', function(err, user){
     if(err){
@@ -81,6 +89,53 @@ router.post('/reset', function(req, res){
     }
   })
 });
+
+router.get('/reset/:hash', function(req, res){
+  UserProfile.findOne({ reset_hash: req.params.hash, reset_hash_time: { $gt: twentyFourHoursAgo() } }, function(err, userProfile) {
+    if (err) {
+      res.json(Error.custom(err))
+    } else if (userProfile) {
+      res.json({})
+    } else {
+      res.json(Error.custom("The reset link you have provided does not exist. This message may also appear if your link is more than 24 hours old."))
+    }
+  })
+})
+
+router.post('/reset/:hash', function(req, res){
+  UserProfile.findOne({ reset_hash: req.params.hash, reset_hash_time: { $gt: twentyFourHoursAgo() }, username: req.body.username }, function(err, userProfile) {
+    if (err) {
+      res.json(Error.custom(err))
+    } else if (userProfile) {
+      User.findOne({'_id': userProfile._id}, function(err, user){
+        if(err) {
+          res.json(Error.custom(err))
+        } else if (user) {
+          user.salt = user.createSalt(req.body.password)
+          user.password = user.hashPassword(req.body.password, user.salt)
+          user.save(function(err){
+            if(err){
+              res.json(Error.custom(err))
+            } else {
+              userProfile.reset_hash = null
+              userProfile.save(function(err) {
+                if(err) {
+                  res.json(Error.custom(err))
+                } else {
+                  res.json({})
+                }
+              })
+            }
+          });
+        } else {
+          res.json(Error.custom("The password reset function was not completed"))
+        }
+      })
+    } else {
+      res.json(Error.custom("The username entered does not match your reset link."))
+    }
+  })
+})
 
 router.post('/change', function(req, res){
   if(req.user){
