@@ -1,11 +1,13 @@
 var LocalStrategy = require('passport-local').Strategy,
 		User = require('../../models/user'),
 		UserProfile = require('../../models/userprofile'),
+    crypto = require('crypto'),
 		bCrypt = require('bcryptjs'),
 		md5 = require('MD5'),
 		async = require('async'),
 		_ = require('underscore'),
 		mailer = require('../emailer'),
+    config = require('config'),
     Error = require('../error');
 
 module.exports = function(req, res, next){
@@ -25,34 +27,27 @@ module.exports = function(req, res, next){
 					}
 					else {
 						shared.userProfile = userProfile;
-						User.findOne({'_id': userProfile._id}, function(err, user){
-			        if (err){
-								res.json(Error.custom(err));
-							}
-							else{
-								shared.user = user;
-				        next();
-							}
-			      });
+            next()
 					}
 				}
 			});
     },
 
-    // create new password
+    // create random string
     function(next) {
-      shared.newPassword = getRandomString(8);
+      var current_date = (new Date()).valueOf().toString();
+      var random = Math.random().toString();
+      shared.randomHash = crypto.createHash('sha1').update(current_date + random).digest('hex');
       next();
     },
 
     function(next) {
 
       // set the user's local credentials
-      shared.user.salt = createSalt(shared.newPassword)
-      shared.user.password = hashPassword(shared.newPassword, shared.user.salt)
+      shared.userProfile.resetHash = shared.randomHash
 
       // save the user
-      shared.user.save(function(err) {
+      shared.userProfile.save(function(err) {
         if (err){
 					res.json(Error.custom(err));
 				}
@@ -67,10 +62,10 @@ module.exports = function(req, res, next){
       var mailOptions = {
 				from: 'Qlik Branch <svc-branchadminmail@qlik.com>',
         to: shared.userProfile.email,
-        subject: 'Password reset',
-        html: '<p>You are receiving this because you have requested the reset of the password for your account.</p>' +
-         '<p>Please use the following temporary password to access your account - <b>' + shared.newPassword + '</b></p>' +
-         '<p>Once logged in we recommend that you update your password as soon as possible.</p>'
+        subject: 'Qlik Branch Password reset',
+        html: `<p>You are receiving this because a request was made to reset the password for your Branch account.</p>
+         <p>Please click <a href="${config.baseUrl}/auth/reset/${shared.userProfile.resetHash}">here</a> or copy and paste the link below to change your password</p>
+         <p>${config.baseUrl}/auth/reset/${shared.userProfile.resetHash}</p>`
       }
 
       // send email with new password
