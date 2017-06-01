@@ -45,6 +45,7 @@ module.exports = function(req, res, next){
 
       // set the user's local credentials
       shared.userProfile.reset_hash = shared.randomHash
+      shared.userProfile.reset_hash_time = new Date(Date.now()).getTime()
 
       // save the user
       shared.userProfile.save(function(err) {
