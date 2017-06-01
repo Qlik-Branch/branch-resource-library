@@ -3,7 +3,6 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
   var Signup = $resource("auth/signup");
   var Check = $resource("auth/check")
   var Reset = $resource("auth/reset");
-  var ResetWithHash = $resource("auth/reset/:hash", {hash: "@hash"})
   var Recaptcha = $resource("recaptcha")
 
   $scope.authLoading = false;
@@ -110,35 +109,6 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
     })
   };
 
-  $scope.getResetHash = function () {
-    ResetWithHash.get({hash: $stateParams.hash}, function(result) {
-      if(resultHandler.process(result)){
-        $scope.hashConfirmed = true
-      }
-      else{
-        notifications.notify(result.errText, null, {sentiment: 'negative'})
-      }
-    })
-  };
-
-  $scope.completeReset = function () {
-    ResetWithHash.save({
-      hash: $stateParams.hash,
-      username: $scope.username,
-      password: $scope.password
-    }, function(result){
-      if(resultHandler.process(result)){
-        $scope.username = ""
-        $scope.password = ""
-        $scope.confirm = ""
-        notifications.notify("Your password was successfully changed. ", null, {sentiment: 'positive'})
-      }
-      else{
-        notifications.notify(result.errText, null, {sentiment: 'negative'})
-      }
-    })
-  }
-
   $scope.reset = function () {
     $scope.resetting = true;
     Reset.save({
@@ -157,14 +127,4 @@ app.controller("authController", ["$scope", "$resource", "$state", "$stateParams
     })
   };
 
-}])
-.directive('changePasswordReady',["$parse",function( $parse ) {
-   return {
-       restrict: 'A',
-       link: function( $scope, elem, attrs ) {    
-          elem.ready(function(){
-            $scope.getResetHash()
-          })
-       }
-    }
 }]);

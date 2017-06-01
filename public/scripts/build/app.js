@@ -79,17 +79,8 @@
     //used if a session has expired or user is not logged in and tries to navigate to a page that requires authentication
     .state("reset", {
       url: "/reset",
-      templateUrl : "/views/reset/reset.html",
+      templateUrl : "/views/reset.html",
       controller: "authController"
-    })
-    .state("reset.changepassword", {
-      url: "/:hash",
-      views:{
-        "@":{
-          templateUrl: "/views/reset/change-password.html",
-          controller: "authController",
-        }
-      }
     })
     //used to navigate to the admin console
     .state("admin", {
@@ -3254,7 +3245,6 @@
     var Signup = $resource("auth/signup");
     var Check = $resource("auth/check")
     var Reset = $resource("auth/reset");
-    var ResetWithHash = $resource("auth/reset/:hash", {hash: "@hash"})
     var Recaptcha = $resource("recaptcha")
 
     $scope.authLoading = false;
@@ -3361,35 +3351,6 @@
       })
     };
 
-    $scope.getResetHash = function () {
-      ResetWithHash.get({hash: $stateParams.hash}, function(result) {
-        if(resultHandler.process(result)){
-          $scope.hashConfirmed = true
-        }
-        else{
-          notifications.notify(result.errText, null, {sentiment: 'negative'})
-        }
-      })
-    };
-
-    $scope.completeReset = function () {
-      ResetWithHash.save({
-        hash: $stateParams.hash,
-        username: $scope.username,
-        password: $scope.password
-      }, function(result){
-        if(resultHandler.process(result)){
-          $scope.username = ""
-          $scope.password = ""
-          $scope.confirm = ""
-          notifications.notify("Your password was successfully changed. ", null, {sentiment: 'positive'})
-        }
-        else{
-          notifications.notify(result.errText, null, {sentiment: 'negative'})
-        }
-      })
-    }
-
     $scope.reset = function () {
       $scope.resetting = true;
       Reset.save({
@@ -3408,16 +3369,6 @@
       })
     };
 
-  }])
-  .directive('changePasswordReady',["$parse",function( $parse ) {
-     return {
-         restrict: 'A',
-         link: function( $scope, elem, attrs ) {    
-            elem.ready(function(){
-              $scope.getResetHash()
-            })
-         }
-      }
   }]);
 
   app.controller("homeController", ["$rootScope","$scope", "$resource", "$state", "$stateParams", "userManager", "resultHandler", function($rootScope, $scope, $resource, $state, $stateParams, userManager, resultHandler){

@@ -79,17 +79,8 @@
     //used if a session has expired or user is not logged in and tries to navigate to a page that requires authentication
     .state("reset", {
       url: "/reset",
-      templateUrl : "/views/reset/reset.html",
+      templateUrl : "/views/reset.html",
       controller: "authController"
-    })
-    .state("reset.changepassword", {
-      url: "/:hash",
-      views:{
-        "@":{
-          templateUrl: "/views/reset/change-password.html",
-          controller: "authController",
-        }
-      }
     })
     //used to navigate to the admin console
     .state("admin", {
