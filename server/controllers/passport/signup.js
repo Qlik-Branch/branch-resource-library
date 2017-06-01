@@ -37,11 +37,11 @@ module.exports = function(passport, User, UserProfile){
 
         // check user already exists
         function(next) {
-          UserProfile.findOne({ $or: [{ username: username }, { email: req.body.email }]  }, function(err, user) {
+          UserProfile.findOne({ $or: [{ username: new RegExp(username,"i") }, { email: req.body.email }]  }, function(err, user) {
             if (err) return next(err)
 
             if (user) {
-							if(user.username == username){
+							if(user.username.toLowerCase() == username.toLowerCase()){
               	return done('User already exists with username "' + username + '"', false)
 							}
 							else if (user.email == req.body.email) {
