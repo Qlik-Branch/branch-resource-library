@@ -3658,52 +3658,44 @@
       window.location = "#!project?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
     };
 
-    $scope.getAllGitProjects = function(page) {
-      $scope.gitCreds = {
-        page: page || 1
-      };
-      $scope.getGitProjects($scope.gitCreds);
-    };
-
-    $scope.getGitProjects = function(params){
+    $scope.getGitProjects = function () {
       $scope.gitLoading = true;
       $scope.gitError = null;
+      var gitProjects = []
 
-      Git.save({path:"projects"}, params, function(result){
-        console.log(result);
-        if(resultHandler.process(result)){
-          $scope.gitAuthenticated = true;
-          console.log(result);
-          if(result.status=="2fa"){
-            console.log('need 2fa');
-            $scope.is2fa = true;
+      function getProjectsByPage(currentPage) {
+        Git.save({ path: "projects" }, { page: currentPage }, function (result) {
+          if (resultHandler.process(result)) {
+            $scope.gitAuthenticated = true;
+            if (result.status == "2fa") {
+              console.log('need 2fa');
+              $scope.is2fa = true;
+            }
+            else {
+              gitProjects.push.apply(gitProjects, result.repos);
+              if (result.nextPage > 0) {
+                getProjectsByPage(currentPage + 1)
+              } else {
+                $scope.gitProjects = gitProjects
+              }
+            }
+            $scope.gitLoading = false;
           }
-          else{
-            $scope.gitProjects = result.repos;
-            $scope.nextPage = result.nextPage;
-            $scope.prevPage = result.prevPage;
+          else {
+            $scope.gitAuthenticated = $scope.userManager.userInfo.linked_to_github;
+            var msg;
+            try {
+              var msg = JSON.parse(result.errText);
+              $scope.gitError = msg.message;
+            }
+            catch (err) {
+              $scope.gitError = result.errText;
+            }
+            $scope.gitLoading = false;
           }
-          $scope.gitLoading = false;
-        }
-        else{
-          $scope.gitAuthenticated = $scope.userManager.userInfo.linked_to_github;
-          var msg;
-          try{
-            var msg = JSON.parse(result.errText);
-            $scope.gitError = msg.message;
-          }
-          catch(err){
-            $scope.gitError = result.errText;
-          }
-          $scope.gitLoading = false;
-        }
-      });
-    };
-
-    $scope.searchGithub = function(githubSearch) {
-      var gitParams = angular.copy($scope.gitCreds);
-      gitParams.search = githubSearch;
-      $scope.getGitProjects(gitParams);
+        });
+      }
+      getProjectsByPage(1)
     };
 
     $scope.selectGitProject = function(project){
@@ -3972,7 +3964,7 @@
               }
               else{
                 if(userManager.userInfo.linked_to_github==true){
-                  $scope.getAllGitProjects();
+                  $scope.getGitProjects();
                 }
               }
             }
@@ -3984,7 +3976,7 @@
           }
           else{
             if(userManager.userInfo.linked_to_github==true){
-              $scope.getAllGitProjects();
+              $scope.getGitProjects();
             }
           }
         }

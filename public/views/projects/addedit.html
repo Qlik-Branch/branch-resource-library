@@ -77,33 +77,16 @@
           <div class="" ng-if="gitAuthenticated">
             <h3>Select a Project</h3>
             <span class="red" ng-show="gitError">{{gitError}}</span>
-            <form ng-submit="searchGithub(githubSearch)">
               <div class="controls">
-                <div class="input-group">
-                  <input type="text" class="form-control" placeholder="Search your GitHub Repositories" ng-model="githubSearch" />
-                  <span class="input-group-btn">
-                    <button class="btn btn-success" type="submit">
-                      <span class="glyphicon glyphicon-search"></span> Search
-                    </button>
-                  </span>
-                </div>
+                  <input type="text" class="form-control" placeholder="Search your GitHub Repositories" ng-model="githubSearch.name" />
               </div>
-            </form>
             <ul class="plainlist gitlist" ng-if="gitProjects.length > 0">
-              <li ng-repeat="project in gitProjects" ng-click="selectGitProject(project)" ng-class="{'highlight' : projects[0].git_repo==project.name}">
-                <img src="/resources/github.png" />
+              <li ng-repeat="project in gitProjects | filter:githubSearch:strict" ng-click="selectGitProject(project)" ng-class="{'highlight' : projects[0].git_repo==project.name}">
+                <img src="{{project.owner.avatar_url}}" />
                 <h4 ng-if="userManager.userInfo.username !== project.owner.login">{{project.owner.login}}</h4>
                 <div>{{project.name}}</div>
               </li>
             </ul>
-            <div class="git-pagination" ng-if="nextPage > 0 || prevPage > 0">
-              <div class="left">
-                <a ng-show="prevPage > 0" ng-click="getAllGitProjects(prevPage)">&lt; Previous</a>
-              </div>
-              <div class="right">
-                <a ng-show="nextPage > 0" ng-click="getAllGitProjects(nextPage)">Next &gt;</a>
-              </div>
-            </div>
             <div ng-if="gitProjects.length == 0">
               No Projects Found
             </div>
