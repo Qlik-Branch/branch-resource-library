@@ -188,11 +188,9 @@ app.controller("projectController", ["$sce","$rootScope","$scope", "$resource", 
     window.location = "#!project?sort=" + $scope.sort.id + "&product=" + $scope.productId + "&category=" + $scope.categoryId;
   };
 
-  $scope.getAllGitProjects = function(gituser, gitpassword, code) {
+  $scope.getAllGitProjects = function(page) {
     $scope.gitCreds = {
-      user: gituser,
-      password: gitpassword,
-      code: code
+      page: page || 1
     };
     $scope.getGitProjects($scope.gitCreds);
   };
@@ -212,6 +210,8 @@ app.controller("projectController", ["$sce","$rootScope","$scope", "$resource", 
         }
         else{
           $scope.gitProjects = result.repos;
+          $scope.nextPage = result.nextPage;
+          $scope.prevPage = result.prevPage;
         }
         $scope.gitLoading = false;
       }

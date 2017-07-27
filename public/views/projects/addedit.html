@@ -91,9 +91,15 @@
             </form>
             <ul class="plainlist gitlist" ng-if="gitProjects.length > 0">
               <li ng-repeat="project in gitProjects" ng-click="selectGitProject(project)" ng-class="{'highlight' : projects[0].git_repo==project.name}">
-                {{project.name}}
+                <img src="/resources/github.png" />
+                <h4 ng-if="userManager.userInfo.username !== project.owner.login">{{project.owner.login}}</h4>
+                <div>{{project.name}}</div>
               </li>
             </ul>
+            <div ng-if="nextPage > 0 || prevPage > 0">
+              <a ng-if="prevPage > 0" ng-click="getAllGitProjects(prevPage)">&lt; Previous</a>
+              <a ng-if="nextPage > 0" ng-click="getAllGitProjects(nextPage)">Next &gt;</a>
+            </div>
             <div ng-if="gitProjects.length == 0">
               No Projects Found
             </div>

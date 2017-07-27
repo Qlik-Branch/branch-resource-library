@@ -294,16 +294,32 @@
 }
 
 .gitlist{
+  display: flex;
+  flex-wrap: wrap;
   li{
+    display: flex;
+    flex-direction: column;
+    width: 31%;
+    margin: 1%;
     cursor: pointer;
-    height: 30px;
-    line-height: 30px;
+    align-items: center;
+    border: solid 1px @B85;
+    border-radius: 10px;
+    padding: 10px;
+    h4 {
+      color: @green;
+      font-weight: bold;
+    }
+    img {
+      width: 120px;
+    }
     &:hover{
       border-bottom: 1px solid @green;
     }
     &.highlight{
       border-bottom: 2px solid @green;
       color: @green;
+      background: @B85;
     }
   }
 }

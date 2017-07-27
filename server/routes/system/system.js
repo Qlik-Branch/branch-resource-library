@@ -69,7 +69,7 @@ router.post('/git/projects', function(req, res){
       });
     } else {
 
-    GitHub.repos.getAll({user:gitUser}, function(err, repos){
+    GitHub.repos.getAll({user:gitUser, page: req.body.page}, function(err, repos){
       if(err){
         if(err.code == 401){
           console.log(err);
@@ -81,7 +81,7 @@ router.post('/git/projects', function(req, res){
         }
       }
       else{
-        res.json({repos: repos});
+        res.json({repos: repos, nextPage: GitHub.hasNextPage(repos) ? req.body.page+1 : 0, prevPage: GitHub.hasPreviousPage(repos) ? req.body.page-1 : 0 });
       }
     });
     }
