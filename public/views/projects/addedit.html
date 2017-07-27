@@ -96,9 +96,13 @@
                 <div>{{project.name}}</div>
               </li>
             </ul>
-            <div ng-if="nextPage > 0 || prevPage > 0">
-              <a ng-if="prevPage > 0" ng-click="getAllGitProjects(prevPage)">&lt; Previous</a>
-              <a ng-if="nextPage > 0" ng-click="getAllGitProjects(nextPage)">Next &gt;</a>
+            <div class="git-pagination" ng-if="nextPage > 0 || prevPage > 0">
+              <div class="left">
+                <a ng-show="prevPage > 0" ng-click="getAllGitProjects(prevPage)">&lt; Previous</a>
+              </div>
+              <div class="right">
+                <a ng-show="nextPage > 0" ng-click="getAllGitProjects(nextPage)">Next &gt;</a>
+              </div>
             </div>
             <div ng-if="gitProjects.length == 0">
               No Projects Found
