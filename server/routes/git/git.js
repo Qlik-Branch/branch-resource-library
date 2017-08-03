@@ -229,7 +229,7 @@ function authorizeGit(redirectUrl, req, res){
   req.session.lastError = null;
   var state = getRandomString(7);
   //this fires the authorize endpoint and redirects back to x
-  res.redirect(307, "https://github.com/login/oauth/authorize?client_id="+Config.git.client_id+"&redirect_uri="+redirectUrl+"&scope=public_repo&state="+state);
+  res.redirect(307, "https://github.com/login/oauth/authorize?client_id="+Config.git.client_id+"&redirect_uri="+redirectUrl+"&scope=read:org&state="+state);
 }
 
 function getAccessTokenAndUser(data, callbackFn){
