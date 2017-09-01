@@ -7,7 +7,17 @@ const mongoose = require('mongoose'),
     AWS = require("aws-sdk"),
     request = require("request"),
     bodyParser = require('body-parser'),
-    config = require('config');
+    config = require('config'),
+    cors = require('cors')
+
+    if(config.corsDomain != null && config.corsDomain !== "") {
+      var corsOptions = {
+        origin: config.corsDomain,
+        credentials: true,
+        optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204 
+      }
+      app.use(cors(corsOptions))
+    }
 
 var mode = config.mode; // should be "debug" or "release"
 
@@ -18,6 +28,15 @@ mongoose.Promise = global.Promise
 mongoose.connect(config.mongoconnectionstring);
 if(mode === "debug") {
   mongoose.set("debug", true)
+}
+
+if(config.corsDomain != null && config.corsDomain !== "") {
+  var corsOptions = {
+    origin: config.corsDomain,
+    credentials: true,
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204 
+  }
+  app.use(cors(corsOptions))
 }
 
 if (config.prerenderServiceUrl != null && config.prerenderServiceUrl !== "")
@@ -85,7 +104,7 @@ app.use(expressSession({
   saveUninitialized: true,
   secret: 'mySecretKey',
   store: new MongoStore({ mongooseConnection: mongoose.connection}),
-  cookie: {path:"/", domain:config.cookieDomain, httpOnly: true}
+  cookie: {domain:config.cookieDomain}
 }));
 app.use(passport.initialize());
 app.use(passport.session());
