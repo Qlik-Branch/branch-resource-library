@@ -8,6 +8,7 @@ var MasterController = require("../../controllers/master"),
     entities = require("../entityConfig"),
     mongoose = require("mongoose"),
     marketo = require("../../marketo/marketo"),
+    marked = require("marked-iframe"),
     epoch = require("milli-epoch"),
     s3 = require("../../s3/s3"),
     atob = require("atob");
@@ -100,6 +101,8 @@ module.exports = function(req, res){
           checkForMarketo(entity, newrecord)
               .then(() => { res.json(newrecord) })
         });
+      }).catch(error => {
+        res.json(error)
       });
     }
     else{
@@ -157,11 +160,17 @@ var checkForMarkdown = (special, record) => {
     if(!special.markdown) {
       resolve();
     } else {
-      moveMarkdownImages(record.content, record._id)
+      var tokens = marked.lexer(record.content);
+      var result = tokens.filter(function(token) { return /<[a-z][\s\S]*>/i.test(token.text) }).filter(function(token) { return token.type !== "code" })
+      if(result.length > 0) {
+        reject(Error.custom("HTML elements are not allowed outside of code context. If you are attempting to show code, please use backticks (`)."))
+      } else {
+        moveMarkdownImages(record.content, record._id)
         .then((content) => {
           record.content = content;
           resolve();
         });
+      }
     }
   });
 };

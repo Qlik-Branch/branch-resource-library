@@ -21,7 +21,7 @@
   }
 
   markedRenderer.iframe = function(src) {
-    return "<iframe frameborder=\"0\" allowfullscreen src=\"" + src + "\"></iframe>";
+    return "<div class=\"markdown-iframe\"><iframe frameborder=\"0\" allowfullscreen src=\"" + src + "\"></iframe></div>";
   }
 
   marked.setOptions({ renderer: markedRenderer })
@@ -4169,6 +4169,11 @@
       //Verify the resource has content
       if($scope.simplemde.value().length==0 || $scope.simplemde.value().length==12){  //this is not necessarily robust. a length of 12 appears to be an empty input
         errors.push("Please add some content");
+      }
+      var tokens = marked.lexer($scope.simplemde.value());
+      var result = tokens.filter(function(token) { return /<[a-z][\s\S]*>/i.test(token.text) }).filter(function(token) { return token.type !== "code" })
+      if(result.length > 0) {
+        errors.push("HTML elements are not allowed outside of code context. If you are attempting to show code, please use backticks (`).")
       }
       //If there are errors we need to notify the user
       if(errors.length > 0){

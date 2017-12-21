@@ -21,7 +21,7 @@
   }
 
   markedRenderer.iframe = function(src) {
-    return "<iframe frameborder=\"0\" allowfullscreen src=\"" + src + "\"></iframe>";
+    return "<div class=\"markdown-iframe\"><iframe frameborder=\"0\" allowfullscreen src=\"" + src + "\"></iframe></div>";
   }
 
   marked.setOptions({ renderer: markedRenderer })
