@@ -160,17 +160,11 @@ var checkForMarkdown = (special, record) => {
     if(!special.markdown) {
       resolve();
     } else {
-      var tokens = marked.lexer(record.content);
-      var result = tokens.filter(function(token) { return /<[a-z][\s\S]*>/i.test(token.text) }).filter(function(token) { return token.type !== "code" })
-      if(result.length > 0) {
-        reject(Error.custom("HTML elements are not allowed outside of code context. If you are attempting to show code, please use backticks (`)."))
-      } else {
         moveMarkdownImages(record.content, record._id)
         .then((content) => {
           record.content = content;
           resolve();
         });
-      }
     }
   });
 };
