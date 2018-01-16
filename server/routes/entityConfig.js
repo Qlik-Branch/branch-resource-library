@@ -41,7 +41,7 @@ module.exports = {
     resource:{
       collection: "resources",
       model: require("../models/resource"),
-      populates: "userid resourceType",
+      populates: "userid resourceType category",
       exemptFromOwnership: false,
       exemptFromApproval: false,
       logViews: true,

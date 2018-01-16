@@ -6,6 +6,10 @@
       <div class="col-md-12">
         <label>Title:</label>
         <input class="form-control" type="text" ng-model="resources[0].title" placeholder="Title" />
+        <label>Category:</label>
+        <select class="form-control" type="text" name="" ng-model="resources[0].category" ng-options="item.name for item in resourceCategories track by item._id">
+          <option value="">Please specify a Category</option>
+        </select>
         <label>Type:</label>
         <select class="form-control" type="text" name="" ng-model="resources[0].resourceType" ng-options="item.name for item in resourceTypes track by item._id">
           <option value="">Please specify a Type</option>
