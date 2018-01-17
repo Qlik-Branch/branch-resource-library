@@ -21,10 +21,10 @@
   }
 
   markedRenderer.iframe = function(src) {
-    return "<iframe frameborder=\"0\" allowfullscreen src=\"" + src + "\"></iframe>";
+    return "<div class=\"markdown-iframe\"><iframe frameborder=\"0\" allowfullscreen src=\"" + src + "\"></iframe></div>";
   }
 
-  marked.setOptions({ renderer: markedRenderer })
+  marked.setOptions({ renderer: markedRenderer, sanitize: true })
 
   var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngRating", "ngSubscribe", "ngSanitize", "vcRecaptcha" ]);
 
@@ -4100,15 +4100,18 @@
     $scope.resourceLoading = $stateParams.resourceId!="new";
     $scope.isNew = $stateParams.resourceId=="new";
     $scope.resourceTypes;
+    $scope.resourceCategories;
     $rootScope.headTitle = "Resource Center: Qlik Branch";
     $rootScope.metaKeys = "Branch, Qlik Branch, Resource Center, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
     $rootScope.metaDesc = "The Qlik Branch Resource Center is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
     $rootScope.metaImage = "http://branch.qlik.com/resources/branch_logo.png";
 
+    picklistService.getPicklistItems("Resource Category", function(items){
+      $scope.resourceCategories = items;
+    });
 
     picklistService.getPicklistItems("Resource Type", function(items){
       $scope.resourceTypes = items;
-      $scope.newresourceType = items[0];
     });
 
     if($stateParams.resourceId){

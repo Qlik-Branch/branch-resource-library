@@ -8,6 +8,7 @@ var MasterController = require("../../controllers/master"),
     entities = require("../entityConfig"),
     mongoose = require("mongoose"),
     marketo = require("../../marketo/marketo"),
+    marked = require("marked-iframe"),
     epoch = require("milli-epoch"),
     s3 = require("../../s3/s3"),
     atob = require("atob");
@@ -100,6 +101,8 @@ module.exports = function(req, res){
           checkForMarketo(entity, newrecord)
               .then(() => { res.json(newrecord) })
         });
+      }).catch(error => {
+        res.json(error)
       });
     }
     else{
@@ -157,7 +160,7 @@ var checkForMarkdown = (special, record) => {
     if(!special.markdown) {
       resolve();
     } else {
-      moveMarkdownImages(record.content, record._id)
+        moveMarkdownImages(record.content, record._id)
         .then((content) => {
           record.content = content;
           resolve();

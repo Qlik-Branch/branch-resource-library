@@ -21,10 +21,10 @@
   }
 
   markedRenderer.iframe = function(src) {
-    return "<iframe frameborder=\"0\" allowfullscreen src=\"" + src + "\"></iframe>";
+    return "<div class=\"markdown-iframe\"><iframe frameborder=\"0\" allowfullscreen src=\"" + src + "\"></iframe></div>";
   }
 
-  marked.setOptions({ renderer: markedRenderer })
+  marked.setOptions({ renderer: markedRenderer, sanitize: true })
 
   var app = angular.module("branch", ["ui.router", "ngResource", "ngConfirm", "ngNotifications", "ngComments", "ngModeration", "ngRating", "ngSubscribe", "ngSanitize", "vcRecaptcha" ]);
 

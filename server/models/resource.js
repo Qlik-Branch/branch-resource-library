@@ -6,6 +6,10 @@ var resourceSchema = new Schema({
   content: Buffer,
   plaintext: String,
   tags: String,
+  category: {
+    type: Schema.ObjectId,
+    ref: 'picklistitem'
+  },
   createdate: {
     type: Date,
     default: Date.now
