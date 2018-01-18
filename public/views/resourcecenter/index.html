@@ -1,12 +1,26 @@
-<div class="container page resources">
-  <div class="row">
-    <div class="col-md-12">
-      <h2>Knowledge Hub</h2>
+<div class="header-image resource-header-image">
+  <div class="header-text-background">
+    <div class="container">
+      <div class="header-text">
+        Knowledge Hub
+      </div>
+      <div class="row">
+        <div class="col-md-12 forward">
+          <search-input data-view="resources" data-config="resources"></search-input>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+            <button ng-repeat="category in resourceCategories" class="button-outline category-button" data-id="{{category._id}}" type="button" name="button" ng-click="filterCategory(category)">{{category.name}}</button>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-md-12">
-      <search-input data-view="resources" data-config="resources"></search-input>
+</div>
+<div class="container page resources">
+  <div class="row-fluid follow">
+    <div class="span12 text-right">
+      <ng-include src="'/views/follow.html'"></ng-include>
     </div>
   </div>
   <div class="row">

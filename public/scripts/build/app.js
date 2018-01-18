@@ -4094,6 +4094,8 @@
     var Resource = $resource("api/resource/:resourceId", {resourceId: "@resourceId"});
     var Image = $resource("api/resource/image/:url", {url: "@url"});
 
+    var defaultSelection;
+
     $scope.pageSize = 20;
     $scope.query = {};
     $scope.simplemde;
@@ -4119,6 +4121,40 @@
       $scope.query.resourceId = $stateParams.resourceId;
       $scope.resourceId = $stateParams.resourceId;
     }
+
+    $scope.filterCategory = function(category){
+      $scope.removeDefaultSelection('category');
+      $('button:not([data-id="' + category._id + '"])').removeClass("active")
+      var selected = $('button[data-id="' + category._id + '"]')
+      if(selected) {
+        if(selected.hasClass('active')) {
+          selected.removeClass('active')
+        } else {
+          selected.addClass('active');
+          $scope.addDefaultSelection('category', [{qText: category.name}]);
+        }
+      }
+      searchExchange.subscribe('reset', "resources", function(){
+        searchExchange.init(defaultSelection);
+        searchExchange.unsubscribe('reset', "resources");
+      });
+      searchExchange.clear(true);
+    };
+
+    $scope.addDefaultSelection = function(field, values){
+      defaultSelection.push({
+        field: field,
+        values: values
+      });
+    };
+
+    $scope.removeDefaultSelection = function(field){
+      for(var i=0;i<defaultSelection.length;i++){
+        if(defaultSelection[i].field==field){
+          defaultSelection.splice(i,1);
+        }
+      }
+    };
 
     $scope.getResourceData = function(query, append){
       Resource.get(query, function(result){
@@ -4276,6 +4312,9 @@
 
         picklistService.getPicklistItems("Resource Type", function(items){
           $scope.resourceTypes = items;
+        });
+        picklistService.getPicklistItems("Resource Category", function(items){
+          $scope.resourceCategories = items;
         });
         if($stateParams.resourceId=="new"){
           $scope.resources = [{}];
