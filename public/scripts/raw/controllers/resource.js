@@ -112,7 +112,7 @@ app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource",
       $scope.resourceLoading = false;
       if(resultHandler.process(result)){
         var status = $scope.isNew ? "created" : "updated";
-        window.location = "#!resource/"+result._id+"?status="+status;
+        window.location = "#!knowledge/"+result._id+"?status="+status;
       }
       else{
         notifications.notify(result.errText, null, {sentiment: "negative"});

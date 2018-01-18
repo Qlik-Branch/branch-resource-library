@@ -146,7 +146,7 @@
     })
     //used to navigate to the rc list page
     .state("rc", {
-      url: "/resource",
+      url: "/knowledge",
       templateUrl: "/views/resourcecenter/index.html",
       controller: "resourceController"
     })

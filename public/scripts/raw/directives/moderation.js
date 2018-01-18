@@ -29,7 +29,8 @@
 			restrict: "E",
 			replace: true,
 			scope:{
-        entity: "=",
+				entity: "=",
+				entityuri: "=",
         entityid: "=",
 				owner: "=",
 				approved: "=",

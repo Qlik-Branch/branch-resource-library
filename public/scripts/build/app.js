@@ -146,7 +146,7 @@
     })
     //used to navigate to the rc list page
     .state("rc", {
-      url: "/resource",
+      url: "/knowledge",
       templateUrl: "/views/resourcecenter/index.html",
       controller: "resourceController"
     })
@@ -642,7 +642,8 @@
   			restrict: "E",
   			replace: true,
   			scope:{
-          entity: "=",
+  				entity: "=",
+  				entityuri: "=",
           entityid: "=",
   				owner: "=",
   				approved: "=",
@@ -4203,7 +4204,7 @@
         $scope.resourceLoading = false;
         if(resultHandler.process(result)){
           var status = $scope.isNew ? "created" : "updated";
-          window.location = "#!resource/"+result._id+"?status="+status;
+          window.location = "#!knowledge/"+result._id+"?status="+status;
         }
         else{
           notifications.notify(result.errText, null, {sentiment: "negative"});
@@ -4820,7 +4821,7 @@
         $scope.simplemde = new SimpleMDE({ element: textarea[0] })
         $scope.isEditing = true;
       } else {
-        window.location = "#!"+$scope.entity+"/"+$scope.entityid+"/edit";
+        window.location = "#!"+($scope.entityuri||$scope.entity)+"/"+$scope.entityid+"/edit";
       }
     };
 
@@ -4854,7 +4855,7 @@
           Entity.delete({entityId: $scope.entityid}, function(result){
               if(resultHandler.process(result)){
                 if($scope.entity!="comment"){
-                  window.location = "#!"+$scope.entity;
+                  window.location = "#!"+($scope.entityuri||$scope.entity);
                 }
                 $rootScope.$broadcast("listItemDeleted", $scope.entityid);
               }
