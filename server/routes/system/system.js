@@ -111,7 +111,7 @@ function buildMenu(user){
     });
     if(user.role.permissions && user.role.permissions.resource && user.role.permissions.resource.create==true){
       basicMenu.splice(0,0,{
-        label: "Create Resource",
+        label: "Impart Knowledge",
         href: "#!resource/new/edit"
       });
     }

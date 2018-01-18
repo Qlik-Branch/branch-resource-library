@@ -10,9 +10,9 @@ app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource",
   $scope.isNew = $stateParams.resourceId=="new";
   $scope.resourceTypes;
   $scope.resourceCategories;
-  $rootScope.headTitle = "Resource Center: Qlik Branch";
-  $rootScope.metaKeys = "Branch, Qlik Branch, Resource Center, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
-  $rootScope.metaDesc = "The Qlik Branch Resource Center is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
+  $rootScope.headTitle = "Knowledge Hub: Qlik Branch";
+  $rootScope.metaKeys = "Branch, Qlik Branch, Knowledge Hub, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
+  $rootScope.metaDesc = "The Qlik Branch Knowledge Hub is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
   $rootScope.metaImage = "http://branch.qlik.com/resources/branch_logo.png";
 
   picklistService.getPicklistItems("Resource Category", function(items){
@@ -53,9 +53,9 @@ app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource",
           }
           $scope.resourceInfo = result;
           /*console.log(result.data[0]);
-          $rootScope.headTitle = "Resource Center: Qlik Branch";
-          $rootScope.metaKeys = "Branch, Qlik Branch, Resource Center, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
-          $rootScope.metaDesc = "The Qlik Branch Resource Center is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
+          $rootScope.headTitle = "Knowledge Hub: Qlik Branch";
+          $rootScope.metaKeys = "Branch, Qlik Branch, Knowledge Hub, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
+          $rootScope.metaDesc = "The Qlik Branch Knowledge Hub is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
           */
           delete $scope.resourceInfo["data"];
         }
@@ -157,7 +157,7 @@ app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource",
     }
     else if($state.current.name=="rc.addedit"){
       $scope.simplemde = new SimpleMDE({ element: $("#resourceContent")[0],
-                                         placeholder: "Resource content uses markdown. If you would like to add an image to your markdown you can upload the image below, then click the image to add." });
+                                         placeholder: "Knowledge content uses markdown. If you would like to add an image to your markdown you can upload the image below, then click the image to add." });
 
       var dropzone = new Dropzone('#resourceImages', {
         previewTemplate: document.querySelector('#preview-template').innerHTML,

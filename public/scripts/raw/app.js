@@ -150,7 +150,7 @@
       templateUrl: "/views/resourcecenter/index.html",
       controller: "resourceController"
     })
-    //used to navigate to a given resource center detail page
+    //used to navigate to a given knowledge hub detail page
     .state("rc.detail", {
       url: "/:resourceId?status",
       views:{
@@ -160,7 +160,7 @@
         }
       }
     })
-    //used to navigate to the resource center add/edit page
+    //used to navigate to the knowledge hub add/edit page
     .state("rc.addedit", {
       url: "/:resourceId/edit",
       views:{
