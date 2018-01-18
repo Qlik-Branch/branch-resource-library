@@ -3649,7 +3649,7 @@
 
     $scope.getPageText = function(){
       if($scope.projects[0] && $scope.projects[0].content){
-        var result = marked($scope.projects[0].content);
+        var result = $scope.projects[0].content;
         return $sce.trustAsHtml(result);
         //return $scope.projects[0].content;
       }
