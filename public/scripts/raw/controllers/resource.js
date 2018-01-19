@@ -2,6 +2,8 @@ app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource",
   var Resource = $resource("api/resource/:resourceId", {resourceId: "@resourceId"});
   var Image = $resource("api/resource/image/:url", {url: "@url"});
 
+  var defaultSelection;
+
   $scope.pageSize = 20;
   $scope.query = {};
   $scope.simplemde;
@@ -10,9 +12,9 @@ app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource",
   $scope.isNew = $stateParams.resourceId=="new";
   $scope.resourceTypes;
   $scope.resourceCategories;
-  $rootScope.headTitle = "Resource Center: Qlik Branch";
-  $rootScope.metaKeys = "Branch, Qlik Branch, Resource Center, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
-  $rootScope.metaDesc = "The Qlik Branch Resource Center is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
+  $rootScope.headTitle = "Knowledge Hub: Qlik Branch";
+  $rootScope.metaKeys = "Branch, Qlik Branch, Knowledge Hub, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
+  $rootScope.metaDesc = "The Qlik Branch Knowledge Hub is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
   $rootScope.metaImage = "http://branch.qlik.com/resources/branch_logo.png";
 
   picklistService.getPicklistItems("Resource Category", function(items){
@@ -27,6 +29,40 @@ app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource",
     $scope.query.resourceId = $stateParams.resourceId;
     $scope.resourceId = $stateParams.resourceId;
   }
+
+  $scope.filterCategory = function(category){
+    $scope.removeDefaultSelection('category');
+    $('button:not([data-id="' + category._id + '"])').removeClass("active")
+    var selected = $('button[data-id="' + category._id + '"]')
+    if(selected) {
+      if(selected.hasClass('active')) {
+        selected.removeClass('active')
+      } else {
+        selected.addClass('active');
+        $scope.addDefaultSelection('category', [{qText: category.name}]);
+      }
+    }
+    searchExchange.subscribe('reset', "resources", function(){
+      searchExchange.init(defaultSelection);
+      searchExchange.unsubscribe('reset', "resources");
+    });
+    searchExchange.clear(true);
+  };
+
+  $scope.addDefaultSelection = function(field, values){
+    defaultSelection.push({
+      field: field,
+      values: values
+    });
+  };
+
+  $scope.removeDefaultSelection = function(field){
+    for(var i=0;i<defaultSelection.length;i++){
+      if(defaultSelection[i].field==field){
+        defaultSelection.splice(i,1);
+      }
+    }
+  };
 
   $scope.getResourceData = function(query, append){
     Resource.get(query, function(result){
@@ -53,9 +89,9 @@ app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource",
           }
           $scope.resourceInfo = result;
           /*console.log(result.data[0]);
-          $rootScope.headTitle = "Resource Center: Qlik Branch";
-          $rootScope.metaKeys = "Branch, Qlik Branch, Resource Center, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
-          $rootScope.metaDesc = "The Qlik Branch Resource Center is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
+          $rootScope.headTitle = "Knowledge Hub: Qlik Branch";
+          $rootScope.metaKeys = "Branch, Qlik Branch, Knowledge Hub, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
+          $rootScope.metaDesc = "The Qlik Branch Knowledge Hub is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
           */
           delete $scope.resourceInfo["data"];
         }
@@ -112,7 +148,7 @@ app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource",
       $scope.resourceLoading = false;
       if(resultHandler.process(result)){
         var status = $scope.isNew ? "created" : "updated";
-        window.location = "#!resource/"+result._id+"?status="+status;
+        window.location = "#!knowledge/"+result._id+"?status="+status;
       }
       else{
         notifications.notify(result.errText, null, {sentiment: "negative"});
@@ -157,7 +193,7 @@ app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource",
     }
     else if($state.current.name=="rc.addedit"){
       $scope.simplemde = new SimpleMDE({ element: $("#resourceContent")[0],
-                                         placeholder: "Resource content uses markdown. If you would like to add an image to your markdown you can upload the image below, then click the image to add." });
+                                         placeholder: "Knowledge content uses markdown. If you would like to add an image to your markdown you can upload the image below, then click the image to add." });
 
       var dropzone = new Dropzone('#resourceImages', {
         previewTemplate: document.querySelector('#preview-template').innerHTML,
@@ -184,6 +220,9 @@ app.controller("resourceController", ["$sce","$rootScope","$scope", "$resource",
 
       picklistService.getPicklistItems("Resource Type", function(items){
         $scope.resourceTypes = items;
+      });
+      picklistService.getPicklistItems("Resource Category", function(items){
+        $scope.resourceCategories = items;
       });
       if($stateParams.resourceId=="new"){
         $scope.resources = [{}];

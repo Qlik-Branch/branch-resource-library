@@ -10,7 +10,7 @@
         <span>Category: {{resources[0].category.name}}</span><br />
         <span>Last Updated on {{resources[0].last_updated |  date:'MMM dd, yyyy'}} at {{ resources[0].last_updated |  date:'HH:mm'}} by <a class="user-link" href="#!user/{{resources[0].userid._id}}">{{resources[0].userid.username}}</a></span>
         <div class="resource-content" ng-bind-html="getResourceContent(resources[0].content)"></div>
-        <moderation entity="'resource'" entityid="resources[0]._id" approved="resources[0].approved" owner="resources[0].userid._id" size="'large'" editable="true"></moderation>
+        <moderation entityuri="'knowledge'" entity="'resource'" entityid="resources[0]._id" approved="resources[0].approved" owner="resources[0].userid._id" size="'large'" editable="true"></moderation>
       </div>
     </div>
     <div class="resource-comments" comments entity="'resource'" entityid="resourceId"></div>

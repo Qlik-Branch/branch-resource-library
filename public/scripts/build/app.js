@@ -146,11 +146,11 @@
     })
     //used to navigate to the rc list page
     .state("rc", {
-      url: "/resource",
+      url: "/knowledge",
       templateUrl: "/views/resourcecenter/index.html",
       controller: "resourceController"
     })
-    //used to navigate to a given resource center detail page
+    //used to navigate to a given knowledge hub detail page
     .state("rc.detail", {
       url: "/:resourceId?status",
       views:{
@@ -160,7 +160,7 @@
         }
       }
     })
-    //used to navigate to the resource center add/edit page
+    //used to navigate to the knowledge hub add/edit page
     .state("rc.addedit", {
       url: "/:resourceId/edit",
       views:{
@@ -642,7 +642,8 @@
   			restrict: "E",
   			replace: true,
   			scope:{
-          entity: "=",
+  				entity: "=",
+  				entityuri: "=",
           entityid: "=",
   				owner: "=",
   				approved: "=",
@@ -3648,7 +3649,7 @@
 
     $scope.getPageText = function(){
       if($scope.projects[0] && $scope.projects[0].content){
-        var result = marked($scope.projects[0].content);
+        var result = $scope.projects[0].content;
         return $sce.trustAsHtml(result);
         //return $scope.projects[0].content;
       }
@@ -4093,6 +4094,8 @@
     var Resource = $resource("api/resource/:resourceId", {resourceId: "@resourceId"});
     var Image = $resource("api/resource/image/:url", {url: "@url"});
 
+    var defaultSelection;
+
     $scope.pageSize = 20;
     $scope.query = {};
     $scope.simplemde;
@@ -4101,9 +4104,9 @@
     $scope.isNew = $stateParams.resourceId=="new";
     $scope.resourceTypes;
     $scope.resourceCategories;
-    $rootScope.headTitle = "Resource Center: Qlik Branch";
-    $rootScope.metaKeys = "Branch, Qlik Branch, Resource Center, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
-    $rootScope.metaDesc = "The Qlik Branch Resource Center is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
+    $rootScope.headTitle = "Knowledge Hub: Qlik Branch";
+    $rootScope.metaKeys = "Branch, Qlik Branch, Knowledge Hub, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
+    $rootScope.metaDesc = "The Qlik Branch Knowledge Hub is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
     $rootScope.metaImage = "http://branch.qlik.com/resources/branch_logo.png";
 
     picklistService.getPicklistItems("Resource Category", function(items){
@@ -4118,6 +4121,40 @@
       $scope.query.resourceId = $stateParams.resourceId;
       $scope.resourceId = $stateParams.resourceId;
     }
+
+    $scope.filterCategory = function(category){
+      $scope.removeDefaultSelection('category');
+      $('button:not([data-id="' + category._id + '"])').removeClass("active")
+      var selected = $('button[data-id="' + category._id + '"]')
+      if(selected) {
+        if(selected.hasClass('active')) {
+          selected.removeClass('active')
+        } else {
+          selected.addClass('active');
+          $scope.addDefaultSelection('category', [{qText: category.name}]);
+        }
+      }
+      searchExchange.subscribe('reset', "resources", function(){
+        searchExchange.init(defaultSelection);
+        searchExchange.unsubscribe('reset', "resources");
+      });
+      searchExchange.clear(true);
+    };
+
+    $scope.addDefaultSelection = function(field, values){
+      defaultSelection.push({
+        field: field,
+        values: values
+      });
+    };
+
+    $scope.removeDefaultSelection = function(field){
+      for(var i=0;i<defaultSelection.length;i++){
+        if(defaultSelection[i].field==field){
+          defaultSelection.splice(i,1);
+        }
+      }
+    };
 
     $scope.getResourceData = function(query, append){
       Resource.get(query, function(result){
@@ -4144,9 +4181,9 @@
             }
             $scope.resourceInfo = result;
             /*console.log(result.data[0]);
-            $rootScope.headTitle = "Resource Center: Qlik Branch";
-            $rootScope.metaKeys = "Branch, Qlik Branch, Resource Center, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
-            $rootScope.metaDesc = "The Qlik Branch Resource Center is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
+            $rootScope.headTitle = "Knowledge Hub: Qlik Branch";
+            $rootScope.metaKeys = "Branch, Qlik Branch, Knowledge Hub, Tutorials, Tips, Learning, Getting Started, Knowledge Base, Qlik, Open Source";
+            $rootScope.metaDesc = "The Qlik Branch Knowledge Hub is a repository for knowledge created and shared by the Qlik web developer community.  It holds content such as tutorials, tips, tricks, snippets, videos, and anything else that could be helpful in developing with the Qlik platform."
             */
             delete $scope.resourceInfo["data"];
           }
@@ -4203,7 +4240,7 @@
         $scope.resourceLoading = false;
         if(resultHandler.process(result)){
           var status = $scope.isNew ? "created" : "updated";
-          window.location = "#!resource/"+result._id+"?status="+status;
+          window.location = "#!knowledge/"+result._id+"?status="+status;
         }
         else{
           notifications.notify(result.errText, null, {sentiment: "negative"});
@@ -4248,7 +4285,7 @@
       }
       else if($state.current.name=="rc.addedit"){
         $scope.simplemde = new SimpleMDE({ element: $("#resourceContent")[0],
-                                           placeholder: "Resource content uses markdown. If you would like to add an image to your markdown you can upload the image below, then click the image to add." });
+                                           placeholder: "Knowledge content uses markdown. If you would like to add an image to your markdown you can upload the image below, then click the image to add." });
 
         var dropzone = new Dropzone('#resourceImages', {
           previewTemplate: document.querySelector('#preview-template').innerHTML,
@@ -4275,6 +4312,9 @@
 
         picklistService.getPicklistItems("Resource Type", function(items){
           $scope.resourceTypes = items;
+        });
+        picklistService.getPicklistItems("Resource Category", function(items){
+          $scope.resourceCategories = items;
         });
         if($stateParams.resourceId=="new"){
           $scope.resources = [{}];
@@ -4820,7 +4860,7 @@
         $scope.simplemde = new SimpleMDE({ element: textarea[0] })
         $scope.isEditing = true;
       } else {
-        window.location = "#!"+$scope.entity+"/"+$scope.entityid+"/edit";
+        window.location = "#!"+($scope.entityuri||$scope.entity)+"/"+$scope.entityid+"/edit";
       }
     };
 
@@ -4854,7 +4894,7 @@
           Entity.delete({entityId: $scope.entityid}, function(result){
               if(resultHandler.process(result)){
                 if($scope.entity!="comment"){
-                  window.location = "#!"+$scope.entity;
+                  window.location = "#!"+($scope.entityuri||$scope.entity);
                 }
                 $rootScope.$broadcast("listItemDeleted", $scope.entityid);
               }

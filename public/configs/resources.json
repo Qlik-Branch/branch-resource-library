@@ -25,6 +25,10 @@
       "suppressNull": true
     },
     {
+      "dimension": "category",
+      "suppressNull": true
+    },
+    {
       "dimension": "createdate_num",
       "suppressNull": false
     },

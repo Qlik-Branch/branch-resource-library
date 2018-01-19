@@ -1,7 +1,7 @@
 <div class="container page resource-edit">
   <div class="content">
     <notification-dialog></notification-dialog>
-    <h2>{{resources[0]._id ? 'Edit Resource' : 'New Resource'}}</h2>
+    <h2>{{resources[0]._id ? 'Edit Knowledge' : 'New Knowledge'}}</h2>
     <div class="row">
       <div class="col-md-12">
         <label>Title:</label>
@@ -15,7 +15,7 @@
           <option value="">Please specify a Type</option>
         </select>
         <label>Tags:</label>
-        <input class="form-control" type="text" ng-model="resources[0].tags" name="name" value="" placeholder="Assign some tags to your resource. e.g. Visualization, Sense">
+        <input class="form-control" type="text" ng-model="resources[0].tags" name="name" value="" placeholder="Assign some tags to your knowledge. e.g. Visualization, Sense">
       </div>
       <div class="col-md-12">
         <label>Content:</label>
