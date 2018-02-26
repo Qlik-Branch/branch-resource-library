@@ -3055,6 +3055,11 @@
       });
     };
 
+    $scope.exportUsers = function() {
+      if(window.confirm("Are you sure you want to export all users? This action is very intensive on the database and should be done sparingly"))
+        window.location ="/api/export"
+    }
+
     $scope.highlightRow = function (id) {
       if ($scope.features[$scope.activeFeature].entityId == id) {
         return true;

@@ -29,6 +29,7 @@ var async = require('async'),
 var createupdate = require("./createupdate");
 var imageupload = require("./imageupload");
 var imagedelete = require("./imagedelete");
+const userexport = require('./userexport')
 var read = require("./read");
 var update = require("./update");
 var flag = require("./flag");
@@ -41,6 +42,8 @@ GitHub.authenticate({type: "token", token: Config.git.token });
 router.get("/bucket", function(req, res) {
   res.json(Config.s3);
 });
+
+router.get("/export", userexport)
 
 //This route is for getting a list of results for the specified entity
 //url parameters can be used to add filtering
