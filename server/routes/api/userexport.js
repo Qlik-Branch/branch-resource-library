@@ -54,18 +54,22 @@ let headers = [
   'lastvisit' // date
 ]
 
-async function GetCsv(stream) {
+async function GetCsv(stream, params) {
   stream.setHeader('Content-disposition', 'attachment; filename=user-list.csv');
   stream.setHeader('Content-type', 'text/csv');
   stream.write(`"${headers.join('","')}"\r\n`)
-  let profiles = await UserProfile.find()
+  let query = {}
+  if(params.year) {
+    query.createdate = { $gte: new Date(params.year, 0, 1) }
+  }
+  let profiles = await UserProfile.find(query)
   profiles.forEach(profile => outputProfile(profile, stream))
   stream.end()
 }
 
 module.exports = (req, res) => {
   if(req.user && req.user.role && req.user.role.name==="admin") {
-    GetCsv(res)
+    GetCsv(res, req.params)
   } else {
     res.json(Error.insufficientPermissions());
   }

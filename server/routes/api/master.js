@@ -43,7 +43,7 @@ router.get("/bucket", function(req, res) {
   res.json(Config.s3);
 });
 
-router.get("/export", userexport)
+router.get("/export/:year?", userexport)
 
 //This route is for getting a list of results for the specified entity
 //url parameters can be used to add filtering
