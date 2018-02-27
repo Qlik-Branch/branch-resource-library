@@ -1,4 +1,8 @@
 <div class="user">
+  <select ng-model="selected.selectedYear" ng-options="year for year in years track by year">
+    <option value="">Full</option>
+  </select>
+  <button ng-click="exportUsers()">Export Users</button>
   <search-input data-view="admin" data-config="users"></search-input>
   <search-results id="adminUserResults" data-view="admin" data-config="users"></search-results>
 </div>

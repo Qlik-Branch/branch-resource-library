@@ -2793,6 +2793,11 @@
       "subscription"
     ];
 
+    $scope.years = []
+    for(i = (new Date()).getFullYear(); $scope.years.length < 5; i--) {
+      $scope.years.push(i)
+    }
+
     var defaultSelection;
 
     $scope.getImages = function () {
@@ -2847,6 +2852,8 @@
     $scope.activeTab = 0;
 
     $scope.activeFeature = 0;
+
+    $scope.selected = { selectedYear: 2018 };
 
     $scope.setTab = function (index) {
       $scope.activeTab = index;
@@ -3054,6 +3061,15 @@
         }
       });
     };
+
+    $scope.exportUsers = function() {
+      if(window.confirm("Are you sure you want to export all users? This action is very intensive on the database and should be done sparingly")) {
+        var location = "/api/export"
+        if($scope.selected.selectedYear)
+          location += "/" + $scope.selected.selectedYear.toString()
+        window.location = location
+      }
+    }
 
     $scope.highlightRow = function (id) {
       if ($scope.features[$scope.activeFeature].entityId == id) {
