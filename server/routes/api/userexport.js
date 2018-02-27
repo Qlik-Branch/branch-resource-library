@@ -54,17 +54,24 @@ let headers = [
   'lastvisit' // date
 ]
 
-async function GetCsv(stream, params) {
+function GetCsv(stream, params) {
   stream.setHeader('Content-disposition', 'attachment; filename=user-list.csv');
   stream.setHeader('Content-type', 'text/csv');
   stream.write(`"${headers.join('","')}"\r\n`)
-  let query = {}
+  let query = { }
   if(params.year) {
-    query.createdate = { $gte: new Date(params.year, 0, 1) }
+    query["$and"] = []
+    let startDate = new Date(params.year, 0, 1)
+    let endDate = new Date(params.year, 0, 1)
+    endDate.setFullYear(endDate.getFullYear()+1)
+    query["$and"].push({ createdate: { $gte: startDate } })
+    query["$and"].push({ createdate: { $lt: endDate}})
   }
-  let profiles = await UserProfile.find(query)
-  profiles.forEach(profile => outputProfile(profile, stream))
-  stream.end()
+  UserProfile.find(query)
+  .then((profiles) => {
+    profiles.forEach(profile => outputProfile(profile, stream))
+    stream.end()
+  })
 }
 
 module.exports = (req, res) => {
