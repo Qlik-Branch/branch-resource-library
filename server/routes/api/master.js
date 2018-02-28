@@ -215,7 +215,13 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         GitHub.authenticate({type: "token", token: Config.git.token });
         GitHub.repos.get({owner:gituser, repo:repo}, function(err, gitresult){
           if(err){
-            res.json(Error.custom(err.message));
+            console.error("master.js - Issue with GitHub.repos.get - " + req.params.entity)
+            console.error(err.message)
+            // there was an issue getting the latest from github.
+            // we won't do anything with the problem at the moment,
+            // but we don't want to send an error back to the site,
+            // so just return what we have
+            res.json(results || {});
           }
           else{
             //update the update date and git check data
