@@ -31,7 +31,6 @@ router.get('/userInfo', function(req, res){
 });
 
 router.get('/lasterror', function(req, res){
-  console.log(req.session.lastError);
   if(req.session && req.session.lastError){
     res.json(req.session.lastError);
   }
@@ -54,14 +53,9 @@ router.post('/git/projects', function(req, res){
       var query = req.body.search + "+user:" + gitUser;
       GitHub.search.repos({q: query}, function(err, repos) {
         if(err){
-          if(err.code == 401){
-            console.log(err);
-            res.json(Error.custom(err.message));
-          }
-          else{
-            console.log(err);
-            res.json(Error.custom(err.message));
-          }
+          console.error("system.js - router.post - /git/projects - GitHub.search.repos")
+          console.error(err);
+          res.json(Error.custom(err.message));
         }
         else{
           res.json({repos: repos && repos.items ? repos.items : [] });
@@ -71,14 +65,9 @@ router.post('/git/projects', function(req, res){
 
     GitHub.repos.getAll({user:gitUser, page: req.body.page}, function(err, repos){
       if(err){
-        if(err.code == 401){
-          console.log(err);
-          res.json(Error.custom(err.message));
-        }
-        else{
-          console.log(err);
-          res.json(Error.custom(err.message));
-        }
+        console.error("system.js - router.post - /git/projects - GitHub.repos.getAll")
+        console.error(err);
+        res.json(Error.custom(err.message));
       }
       else{
         res.json({repos: repos, nextPage: GitHub.hasNextPage(repos) ? req.body.page+1 : 0, prevPage: GitHub.hasPreviousPage(repos) ? req.body.page-1 : 0 });
@@ -87,7 +76,8 @@ router.post('/git/projects', function(req, res){
     }
   }
   catch(ex){
-    console.log(ex);
+    console.error("system.js - router.post - /git/projects - try/catch")
+    console.error(ex);
     res.json(Error.custom("Unable to authenticate"));
   }
 });

@@ -54,8 +54,6 @@ module.exports = function(req, res){
       else if (entity=="userprofile" && req.user.role.name!="admin") {
         //get the existing user
         entities["userprofile"].model.findOne({_id: record._id}).populate("role").exec( function(err, result){
-          console.log(result.role._id);
-          console.log(record.role._id);
           if(result && result.role._id != record.role._id){
             res.json(Error.insufficientPermissions());
             //this will crash node but in theory we should never make it here
@@ -192,7 +190,8 @@ var moveMarkdownImages = (content, identifier, resolver) => {
           markdown = markdown.substring(0,first) + newFile + markdown.substring(second);
           moveMarkdownImages(markdown, identifier, resolver);
         }).catch((err) => {
-          console.log("Error moving image", err);
+          console.error("createupdate.js - moveMarkdownImages - s3.moveFile.catch")
+          console.error(err);
           resolver(markdown);
         });
     }
@@ -205,17 +204,16 @@ var checkForImage = (special, record, entity) => {
     if(!special.image) {
       resolve()
     } else {
-      console.log("Image Found for ", record._id.toString())
       var imageBuffer = new Buffer(special.image.data, 'base64');
       var imageKey = record._id.toString() + "/image.png";
       s3.uploadFile("attachments", imageKey, imageBuffer)
         .then((result) => {
-          console.log("Successfully uploaded image", result.url)
           record.image = result.url;
           resolve();
         })
         .catch((err) => {
-          console.log("Error uploading image", err);
+          console.error("createupdate.js - checkForImage - s3.uploadFile.catch")
+          console.error(err);
           resolve();
         });
     }
@@ -236,7 +234,8 @@ var checkForThumbnail = (special, record, entity) => {
           resolve();
         })
         .catch((err) => {
-          console.log("Error uploading thumbnail", err);
+          console.error("createupdate.js - checkForThumbnail - s3.uploadFile.catch")
+          console.error(err);
           resolve();
         });
     }

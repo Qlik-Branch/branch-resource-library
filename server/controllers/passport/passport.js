@@ -18,7 +18,8 @@ module.exports = function(passport){
                 user.branch_firstaccess = true
                 user.save(function(err, result) {
                   if(err) {
-                    console.log("Error Saving Branch FirstAccess")
+                    console.error("passport.js - user.save - branch_firstaccess")
+                    console.error(err)
                   }
                   done(err, user);
                 })

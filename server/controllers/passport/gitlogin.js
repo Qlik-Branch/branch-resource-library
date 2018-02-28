@@ -13,7 +13,8 @@ module.exports = function(passport, User, UserProfile, LoginHistory){
                 function(err, userProfile) {
                     // In case of any error, return using the done method
                     if (err){
-												console.log(err);
+                        console.error("gitlogin.js - UserProfile.findOne")
+												console.error(err);
                         return done(err.message, false);
 										}
                     // Username does not exist, log the error and redirect back

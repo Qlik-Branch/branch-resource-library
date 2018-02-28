@@ -14,12 +14,12 @@ module.exports = function(passport, User, UserProfile, LoginHistory){
                 function(err, userProfile) {
                     // In case of any error, return using the done method
                     if (err){
-												console.log(err);
-                        return done(err.message);
+                      console.error("login.js - UserProfile.findOne")
+											console.error(err);
+                      return done(err.message);
 										}
                     // Username does not exist, log the error and redirect back
                     if (!userProfile){
-                        console.log('User Not Found with username '+username);
                         return done('User Not Found with username - '+username, false);
                         //return done(null, false, req.flash('message', 'User Not found.'));
                     }
@@ -32,7 +32,6 @@ module.exports = function(passport, User, UserProfile, LoginHistory){
 										//get the main user info and validate the Password
 										User.findOne({'_id': userProfile._id}, function(err, user){
 											if (!isValidPassword(user, password)){
-	                        console.log('Invalid Password');
 	                        return done('Invalid Password', false);
 	                        //return done(null, false, req.flash('message', 'Invalid Password')); // redirect back to login page
 	                    }

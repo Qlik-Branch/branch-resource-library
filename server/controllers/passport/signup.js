@@ -23,11 +23,13 @@ module.exports = function(passport, User, UserProfile){
         // spam checking
         function(next) {
           spamCheck({ string: [req.body.email].join(' '), type: 'full' }, function(err, results) {
-						console.log(results);
-            if (err) return next(err)
+            if (err) {
+              console.error("signup.js - spamCheck")
+              console.error(err)
+              return next(err)
+            }
 
             if (results.spam) {
-              console.log('User blocked by spam filter system.')
               return done('User blocked by spam filter system.', false)
             }
 
@@ -38,7 +40,11 @@ module.exports = function(passport, User, UserProfile){
         // check user already exists
         function(next) {
             UserProfile.findOne({ $or: [{ username: new RegExp(`/^${username}$/`,"i") }, { email: req.body.email }]  }, function(err, user) {
-            if (err) return next(err)
+            if (err) {
+              console.error("signup.js - UserProfile.findOne")
+              console.error(err)
+              return next(err)
+            }
 
             if (user) {
 							if(user.username.toLowerCase() == username.toLowerCase()){
@@ -69,7 +75,11 @@ module.exports = function(passport, User, UserProfile){
 
           // save the user
           newUser.save(function(err) {
-            if (err) return next(err)
+            if (err) {
+              console.error("signup.js - newUser.save")
+              console.error(err)
+              return next(err)
+            }
 						var newUserProfileData = req.body;
 						newUserProfileData._id = newUserId;
 						newUserProfileData.image = "/attachments/default/userprofile.png";
@@ -79,7 +89,6 @@ module.exports = function(passport, User, UserProfile){
             newUserProfile.lastvisit_num = newUserProfile.createdate.getTime();
 						newUserProfile.save(function(err){
 							if (err) return next(err)
-							console.log('User Registration succesful')
 							shared.newUser = newUserProfile
 							Mailer.sendMail("signup", "user", newUserProfile, function(){
 
@@ -92,7 +101,9 @@ module.exports = function(passport, User, UserProfile){
         }
 
       ], function(err) {
-        if (err) return done(err.message, false)
+        if (err) {
+          return done(err.message, false)
+        }
         done(null, shared.newUser)
       })
     })

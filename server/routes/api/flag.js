@@ -64,7 +64,8 @@ module.exports = {
       }
       Flag.update(query, {flagged: false, edituser: user._id}, function(err, result){
         if(err){
-          console.log(err);
+          console.error("flag.js - unflag - Flag.update")
+          console.error(err);
         }
         else{
           res.json(result);

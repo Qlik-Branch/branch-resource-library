@@ -14,7 +14,8 @@ router.get("/", (req, res, next) => {
 router.delete("/:imageName", (req, res, next) => {
   s3.deleteFile("images/" + req.params.imageName)
       .catch((err) => {
-        console.log("Error Deleting S3 File", err)
+        console.error("images.js - router.delete - /:imageName - s3.deleteFile.catch")
+        console.error(err)
       }).then(() => {
     res.status(200).end()
   })
@@ -33,10 +34,11 @@ router.post("/", (req, res, next) => {
           .then((result) => {
             res.json(result);
           }).catch((err) => {
-        console.log("Error Uploading to S3", err);
-        res.status(500);
-        res.json("There was an issue uploading the file");
-      });
+            console.error("images.js - router.post - / - s3.uploadFile.catch")
+            console.error(err);
+            res.status(500);
+            res.json("There was an issue uploading the file");
+          });
     });
   });
 })

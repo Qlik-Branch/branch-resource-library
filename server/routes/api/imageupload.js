@@ -16,7 +16,8 @@ module.exports = function(req, res){
               .then((result) => {
                   res.json(result);
               }).catch((err) => {
-                  console.log("Error Uploading to S3", err);
+                  console.error("imageupload.js - s3.uploadFile.catch")
+                  console.error(err);
                   res.status(500);
                   res.json("There was an issue uploading the file");
             });

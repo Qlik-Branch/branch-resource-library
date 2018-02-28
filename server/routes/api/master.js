@@ -90,7 +90,6 @@ router.get("/:entity/count", Auth.isLoggedIn, function(req, res){
   var entity = queryObj.entity;
   var user = req.user;
   var userPermissions;
-  console.log(query);
   //check that the user has sufficient permissions for this operation
   if(req.user){
     userPermissions = req.user.role.permissions[req.params.entity];
@@ -215,7 +214,7 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
         GitHub.authenticate({type: "token", token: Config.git.token });
         GitHub.repos.get({owner:gituser, repo:repo}, function(err, gitresult){
           if(err){
-            console.error("master.js - Issue with GitHub.repos.get - " + req.params.entity)
+            console.error("master.js - router.get - /:entity/:id - GitHub.repos.get - " + req.params.entity)
             console.error(err.message)
             // there was an issue getting the latest from github.
             // we won't do anything with the problem at the moment,
@@ -235,12 +234,14 @@ router.get("/:entity/:id", Auth.isLoggedIn, function(req, res){
               GitHub.authenticate({type: "token", token: Config.git.token });
               GitHub.repos.getReadme({owner:gituser, repo:repo, headers:{accept: 'application/vnd.github.VERSION.raw'}}, function(err, readmeresult){
                 if(err){
-                  console.log(err);
+                  console.error("master.js - router.get - /:entity/:id - GitHub.repos.getReadme")
+                  console.error(err);
                 }
                 GitHub.authenticate({type: "token", token: Config.git.token });
                 GitHub.misc.renderMarkdownRaw(readmeresult, function(err, htmlresult){
                   if(err){
-                    console.log(err);
+                    console.error("master.js - router.get - /:entity/:id - GitHub.misc.renderMarkdownRaw")
+                    console.error(err);
                   }
                   else{
                     htmlresult = htmlresult.data
