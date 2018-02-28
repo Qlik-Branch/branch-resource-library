@@ -14,6 +14,7 @@ router.post('/', (req, res) => {
         res.json({ success: true })
       })
       .catch((errorCodes) => {
+        console.error("recaptcha.js - router.post - / - recaptcha.validate.catch")
         console.error(recaptcha.translateErrors(errorCodes))
         res.json({success: false, errors: recaptcha.translateErrors(errorCodes)})
       })

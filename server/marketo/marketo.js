@@ -39,12 +39,14 @@ module.exports = {
           marketo.lead.createOrUpdate([testLead])
               .then(() => { resolve() })
               .catch((err) => {
-                console.log("ISSUE WITH MARKETO", err)
+                console.error("marketo.js - syncUser - marketo.lead.createOrUpdate.catch")
+                console.error(err)
                 resolve()
               })
         }
       } catch(e) {
-        console.log("ISSUE WITH MARKETO", e)
+        console.error("marketo.js - syncUser - try/catch")
+        console.error(e)
         resolve()
       }
     })
@@ -63,12 +65,14 @@ module.exports = {
           marketo.lead.createOrUpdate([testLead])
               .then(() => { resolve(true) })
               .catch((err) => {
-                console.log("ISSUE WITH MARKETO", err)
+                console.error("marketo.js - updateIncentive - marketo.lead.createOrUpdate.catch")
+                console.error(err)
                 resolve(false)
               })
         }
       } catch(e) {
-        console.log("ISSUE WITH MARKETO", e)
+        console.error("marketo.js - updateIncentive - try/catch")
+        console.error(e)
         resolve(false)
       }
     })

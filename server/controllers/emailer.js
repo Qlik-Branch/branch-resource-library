@@ -18,28 +18,24 @@ module.exports = {
         subject: subjectTemplate.getHTML(data),
         html: MailText["mailTemplate"]["header"].html + htmlTemplate.getHTML(data)
       }
-      console.log(mailOptions);
       nodemailer.sendMail(mailOptions, function(error, info){
         if(error){
-          return console.log(error)
+          console.error("emailer.js - sendMail - nodemailer.sendMail")
+          return console.error(error)
         }
         else{
-          console.log('Message sent: ' + info.response);
           callbackFn.call(null);
         }
       });
-    }
-    else{
-      console.log('no mail template found for '+action+"/"+entity);
     }
   },
   sendCustomMail: function(mailOptions, callbackFn){
     nodemailer.sendMail(mailOptions, function(error, info){
       if(error){
-        return console.log(error)
+        console.error("emailer.js - sendCustomMail - nodemailer.sendMail")
+        return console.error(error)
       }
       else{
-        console.log('Message sent: ' + info.response);
         callbackFn.call(null);
       }
     });

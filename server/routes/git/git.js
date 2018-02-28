@@ -54,12 +54,14 @@ router.get("/updatereadme/:id", function(req, res){
             GitHub.authenticate({type: "token", token: Config.git.token });
             GitHub.repos.getReadme({owner:gituser, repo:repo, headers:{accept: 'application/vnd.github.VERSION.raw'}}, function(err, readmeresult){
               if(err){
-                console.log(err);
+                console.error("git.js - router.get - /updatereadme/:id - GitHub.repos.getReadme")
+                console.error(err);
               }
               GitHub.authenticate({type: "token", token: Config.git.token });
               GitHub.misc.renderMarkdownRaw(readmeresult, function(err, htmlresult){
                 if(err){
-                  console.log(err);
+                  console.error("git.js - router.get - /updatereadme/:id - GitHub.misc.renderMarkdownRaw")
+                  console.error(err);
                   res.json(Error.custom(err));
                 }
                 else{
@@ -69,7 +71,8 @@ router.get("/updatereadme/:id", function(req, res){
                   result.content = htmlresult;
                   result.save(function(err){
                     if(err){
-                      console.log(err);
+                      console.error("git.js - router.get - /updatereadme/:id - result.save")
+                      console.error(err);
                     }
                   });
                   res.json(result || {});
@@ -94,8 +97,8 @@ router.get("/unlink", function(req, res){
   req.user.linked_to_github = false;
   req.user.save(function(err, result){
     if(err){
-      console.log('error saving user');
-      console.log(err);
+      console.error("git.js - router.get - /unlink - req.user.save")
+      console.error(err);
     }
     else{
       //res.json({});
@@ -108,22 +111,19 @@ router.use("/linkauthorized", function(req, res){
   if(req.query){
     //the account has been authorized
     //now we authenticate and get a token and the authenticated user
-    console.log('so far so good');
     var data = req.query;
     getAccessTokenAndUser(data, function(data){
       if(!req.user){
-        console.log('user not logged in');
         res.redirect("/login");
       }
       else{
-        console.log(data);
         req.user.linked_to_github = true;
         req.user.github_user = data.user.login;
         req.session.gitToken = data.response.access_token;
         req.user.save(function(err, result){
           if(err){
-            console.log('error saving user');
-            console.log(err);
+            console.error("git.js - router.use - /linkauthorized - req.user.save")
+            console.error(err);
           }
           else{
             //res.json({});
@@ -136,7 +136,6 @@ router.use("/linkauthorized", function(req, res){
 });
 
 router.get("/login", function(req, res){
-  console.log('logging in with GitHub');
   if(req.query.url && req.query.url !== "") {
     req.session.url = req.query.url;
   } else if (req.session.url) {
@@ -151,20 +150,17 @@ router.use("/loginsuccessful", function(req, res, next){
     //now we authenticate and get a token and the authenticated user
     var data = req.query;
     getAccessTokenAndUser(data, function(data){
-      console.log(data.user.login);
       var query = {
         github_user: data.user.login
       };
       //now we need to find a user with the returned github login
       MasterController.get(query, query, entities["userprofile"], function(results){
-        console.log(results);
         if(results.errCode){
           req.session.lastError = results;
         }
         else{
           if(results.data.length == 0){
             req.session.lastError = Error.custom("No user found that is linked to '"+data.user.login+"'. If you are already registered and would like to link your user to GitHub you can do so in your 'My Profile' section.");
-            console.log(req.session.lastError);
             res.redirect('/#!loginsignup');
           }
           else{
@@ -178,18 +174,16 @@ router.use("/loginsuccessful", function(req, res, next){
               req.session.gitToken = data.response.access_token;
               req.body.username = data.user.login;
               req.body.password = "na";
-              console.log(req.body);
               passport.authenticate('gitlogin', function(err, user){
-                console.log('and here');
                 if(err){
                   req.session.lastError = Error.custom(err);
                   res.redirect('/#!loginsignup');
                 }
                 else{
                   req.logIn(user, function(err){
-                    console.log('its here');
-                    console.log(err);
                     if(err){
+                      console.error("git.js - router.use - /loginsuccessful - req.logIn")
+                      console.error(err)
                       req.session.lastError = Error.custom(err);
                       res.redirect('/#!loginsignup');
                     }
@@ -238,8 +232,8 @@ function getAccessTokenAndUser(data, callbackFn){
   data.client_secret = Config.git.secret;
   request({url: url, formData: data}, function(err, response, body){
     if(err){
-      console.log('error getting token');
-      console.log(err);
+      console.error("git.js - getAccessTokenAndUser - request - " + url)
+      console.error(err);
       callbackFn.call(null, {err:err});
     }
     else{
@@ -247,14 +241,13 @@ function getAccessTokenAndUser(data, callbackFn){
       var params = body.split("&");
       for(var i=0;i<params.length;i++){
         var parts = params[i].split("=");
-        console.log(parts);
         responseData[parts[0]] = parts[1];
       }
       GitHub.authenticate({type: "oauth", token: responseData.access_token});
       GitHub.users.get({}, function(err, user){
         if(err){
-          console.log('error getting user');
-          console.log(err);
+          console.error("git.js - getAccessTokenAndUser - GitHub.users.get")
+          console.error(err);
           callbackFn.call(null, {err:err});
         }
         else{

@@ -7,7 +7,8 @@ module.exports = function(req, res){
     key = key.substring(20 + envconfig.s3.bucket.length);
     s3.deleteFile(key)
       .catch((err) => {
-        console.log("Error Deleting S3 File", err);
+        console.error("imagedelete.js - s3.deleteFile.catch")
+        console.error(err);
       }).then(() => {
         res.status(200).end();
       });

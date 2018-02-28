@@ -174,7 +174,8 @@ var Templater = (function(){
 
             }
             catch(err){
-                console.log("error", htmlString);
+              console.error("templater.js - getRepeatBlock - try/catch")
+              console.error(htmlString);
             }
         }
 
@@ -354,7 +355,8 @@ var Templater = (function(){
                       }
                     }
                     catch(err){
-                        console.log("error", data.toString());
+                      console.error("templater.js - getHTML - try/catch")
+                      console.error(data.toString());
                     }
                 }
                 return this.compiledHTML;

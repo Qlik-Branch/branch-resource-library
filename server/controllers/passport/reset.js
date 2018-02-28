@@ -50,9 +50,10 @@ module.exports = function(req, res, next){
       // save the user
       shared.userProfile.save(function(err) {
         if (err){
+          console.error("reset.js - userProfile.save")
+          console.error(err)
 					res.json(Error.custom(err));
 				}
-        console.log('Password reset successful');
         next();
       })
     },

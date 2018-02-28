@@ -113,7 +113,9 @@ app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 
 app.get('/', function(req, res){
+  console.time("Page Request - " + req.url)
   res.render(__dirname+'/server/views/index.jade', {isAuthenticated: req.isAuthenticated(), user: req.user, mode: mode});
+  console.timeEnd("Page Request - " + req.url)
 });
 
 //This route is to accommodate for links from Old Branch (only applied to projects)

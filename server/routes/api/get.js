@@ -43,7 +43,8 @@ module.exports = {
 
       entity.model.find().exec(function(err, response){
         if(err) {
-          console.log(err)
+          console.error("get.js - getProjects - entity.model.find.exec")
+          console.error(err)
         }
 
         next(response)
