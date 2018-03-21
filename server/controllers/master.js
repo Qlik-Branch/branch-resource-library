@@ -3,7 +3,8 @@ var Error = require('./error'),
 
 module.exports = {
   get: function(query, parsedQuery, entity, callbackFn){
-    entity.model.find(parsedQuery).populate(entity.populates).sort(entity.sort).skip(entity.skip).limit(entity.limit).exec(function(err, results){
+    console.log('selecting here')
+    entity.model.find(parsedQuery, entity.fields).populate(entity.populates).sort(entity.sort).skip(entity.skip).limit(entity.limit).exec(function(err, results){
       if(err){
         console.error("master.js - get - entity.model.find.exec")
         console.error(err);

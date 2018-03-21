@@ -2,6 +2,7 @@ module.exports = {
     userprofile:{
       collection: "userprofiles",
       model: require("../models/userprofile"),
+      fields: { apiKey: 0},
       populates: "role",
       exemptFromOwnership: false,
       exemptFromApproval: false,
@@ -15,7 +16,7 @@ module.exports = {
     project:{
       collection: "projects",
       model: require("../models/project"),
-      populates: "userid category product status",
+      populates: [{ path: 'userid', select: '-apiKey' },{path: 'category'},{path: 'product'}, {path: 'status'}],
       exemptFromOwnership: false,
       exemptFromApproval: false,
       logViews: true,
@@ -54,7 +55,7 @@ module.exports = {
     rating: {
       collection: "ratings",
       model: require("../models/rating"),
-      populates: "userid",
+      populates: { path: 'userid', select: '-apiKey' },
       requiresAuthentication: true,
       exemptFromOwnership: false,
       exemptFromApproval: true,
@@ -64,7 +65,7 @@ module.exports = {
     subscription: {
       collection: "subscriptions",
       model: require("../models/subscription"),
-      populates: "userid",
+      populates: { path: 'userid', select: '-apiKey' },
       requiresAuthentication: true,
       exemptFromOwnership: false,
       exemptFromApproval: true,
@@ -74,7 +75,7 @@ module.exports = {
     view: {
       collection: "views",
       model: require("../models/views"),
-      populates: "userid",
+      populates: { path: 'userid', select: '-apiKey' },
       requiresAuthentication: false,
       exemptFromOwnership: true,
       exemptFromApproval: true,
@@ -84,7 +85,7 @@ module.exports = {
     article:{
       collection: "articles",
       model: require("../models/article"),
-      populates: "userid",
+      populates: { path: 'userid', select: '-apiKey' },
       exemptFromOwnership: false,
       exemptFromApproval: false,
       logViews: true,
@@ -97,7 +98,7 @@ module.exports = {
     comment:{
       collection: "comments",
       model: require("../models/comment"),
-      populates: "userid",
+      populates: { path: 'userid', select: '-apiKey' },
       exemptFromOwnership: false,
       exemptFromApproval: false,
       logViews: false,
@@ -122,7 +123,7 @@ module.exports = {
     feature:{
       collection: "features",
       model: require("../models/feature"),
-      populates: "userid",
+      populates: { path: 'userid', select: '-apiKey' },
       exemptFromOwnership: true,
       exemptFromApproval: true,
       logViews: false,
@@ -182,7 +183,7 @@ module.exports = {
     flag: {
       collection: "flags",
       model: require("../models/flag"),
-      populates: "userid",
+      populates: { path: 'userid', select: '-apiKey' },
       exemptFromOwnership: true,
       exemptFromApproval: true,
       logViews: false,
