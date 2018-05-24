@@ -1,10 +1,10 @@
-const https = require('https')
-const parseString = require('xml2js').parseString
-const mongoose = require('mongoose')
-const Publication = require('./server/models/publication')
-const config = require('config')
-const hash = require('object-hash')
-const cron = require('node-cron')
+const https = require("https")
+const parseString = require("xml2js").parseString
+const mongoose = require("mongoose")
+const Publication = require("./server/models/publication")
+const config = require("config")
+const hash = require("object-hash")
+const cron = require("node-cron")
 
 mongoose.Promise = global.Promise
 let lastCheck // holds previous RSS feed, used to only run if different
@@ -12,14 +12,14 @@ let lastCheck // holds previous RSS feed, used to only run if different
 // removes html tags from text
 const cleanUpContent = text => {
   let plaintext = text.replace(/<\/?[^>]+(>|$)/g, " ")
-  plaintext = plaintext.replace(/\s\s+/g, ' ')
+  plaintext = plaintext.replace(/\s\s+/g, " ")
   return plaintext
 }
 
 // pulls the unique ID for the publication from the medium url
 const getUrlId = item => {
   let id = item.guid[0]["_"]
-  id = id.substring(id.lastIndexOf('/') + 1)
+  id = id.substring(id.lastIndexOf("/") + 1)
   return id
 }
 
@@ -29,20 +29,24 @@ const createUpdatePublication = (publication, rssItem) => {
     publication.title = rssItem.title[0]
     publication.author = rssItem["dc:creator"][0]
     publication.link = rssItem["link"][0]
-    publication.tags = rssItem.category.join(', ')
+    publication.tags = rssItem.category.join(", ")
     publication.checksum = hash(rssItem)
     publication.published = new Date(rssItem.pubDate[0])
     publication.published_num = publication.published.getTime()
     publication.content = rssItem["content:encoded"][0]
     publication.mediumId = getUrlId(rssItem)
     publication.plaintext = cleanUpContent(publication.content)
-    publication.short_description = publication.plaintext.length > 200 ? `${publication.plaintext.substring(0, 197)}...` : publication.plaintext
-    publication.image = getFirstImage(publication.content) || "/attachments/default/publication.png"
+    publication.short_description =
+      publication.plaintext.length > 200
+        ? `${publication.plaintext.substring(0, 197)}...`
+        : publication.plaintext
+    publication.image =
+      getFirstImage(publication.content) ||
+      "/attachments/default/publication.png"
     publication.approved = true
-    publication.save()
-      .then(result => {
-        resolve()
-      })
+    publication.save().then(result => {
+      resolve()
+    })
   })
 }
 
@@ -68,20 +72,21 @@ const getFirstImage = content => {
   }
 }
 
-cron.schedule('*/3 * * * *', () => {
-  console.log('Checking for new publications')
+console.log("Checking for new publications")
 
-  https.get(`https://medium.com/feed/${config.mediumId}`, res => {
+https
+  .get(`https://medium.com/feed/${config.mediumId}`, res => {
     const statusCode = res.statusCode
-    const contentType = res.headers['content-type']
+    const contentType = res.headers["content-type"]
 
     let error
     if (statusCode !== 200) {
-      error = new Error(`Request Failed.\n` +
-        `Status Code: ${statusCode}`)
+      error = new Error(`Request Failed.\n` + `Status Code: ${statusCode}`)
     } else if (!/^text\/xml/.test(contentType)) {
-      error = new Error(`Invalid content-type.\n` +
-        `Expected application/json but received ${contentType}`)
+      error = new Error(
+        `Invalid content-type.\n` +
+          `Expected application/json but received ${contentType}`
+      )
     }
     if (error) {
       console.error(error.message)
@@ -90,10 +95,10 @@ cron.schedule('*/3 * * * *', () => {
       return
     }
 
-    res.setEncoding('utf8')
-    let rawData = ''
-    res.on('data', chunk => rawData += chunk)
-    res.on('end', () => {
+    res.setEncoding("utf8")
+    let rawData = ""
+    res.on("data", chunk => (rawData += chunk))
+    res.on("end", () => {
       try {
         let rdHash = hash(rawData)
         if (lastCheck === rdHash) {
@@ -105,36 +110,50 @@ cron.schedule('*/3 * * * *', () => {
             if (err) {
               console.error("Issue parsing xml", err)
             } else {
-              mongoose.connect(config.mongoconnectionstring)
+              mongoose
+                .connect(config.mongoconnectionstring)
                 .then(connection => {
-                  console.log(`${result.rss.channel[0].item.length} publications`)
-                  Promise.all(result.rss.channel[0].item.map(item => {
-                    return new Promise((resolve, reject) => {
-                      Publication.findOne({ mediumId: getUrlId(item) })
-                        .then(publication => {
-                          if (publication) {
-                            const itemHash = hash(item)
-                            if (itemHash !== publication.checksum) {
-                              console.log(`Publication Updated: ${item.title[0]}`)
-                              // item has changed
-                              return createUpdatePublication(publication, item)
+                  console.log(
+                    `${result.rss.channel[0].item.length} publications`
+                  )
+                  Promise.all(
+                    result.rss.channel[0].item.map(item => {
+                      return new Promise((resolve, reject) => {
+                        Publication.findOne({ mediumId: getUrlId(item) })
+                          .then(publication => {
+                            if (publication) {
+                              const itemHash = hash(item)
+                              if (itemHash !== publication.checksum) {
+                                console.log(
+                                  `Publication Updated: ${item.title[0]}`
+                                )
+                                // item has changed
+                                return createUpdatePublication(
+                                  publication,
+                                  item
+                                )
+                              } else {
+                                resolve()
+                              }
                             } else {
-                              resolve()
+                              console.log(`New Publication: ${item.title[0]}`)
+                              // item doesn't exist yet
+                              const newPublication = new Publication({
+                                mediumId: getUrlId(item)
+                              })
+                              return createUpdatePublication(
+                                newPublication,
+                                item
+                              )
                             }
-                          } else {
-                            console.log(`New Publication: ${item.title[0]}`)
-                            // item doesn't exist yet
-                            const newPublication = new Publication({ mediumId: getUrlId(item) })
-                            return createUpdatePublication(newPublication, item)
-                          }
-                        })
-                        .then(created => resolve())
+                          })
+                          .then(created => resolve())
+                      })
                     })
-                  }))
-                    .then(result => {
-                      console.log('done')
-                      mongoose.connection.close()
-                    }) // Promise.all.then
+                  ).then(result => {
+                    console.log("done")
+                    mongoose.connection.close()
+                  }) // Promise.all.then
                 }) // mongoose.connect
             } // if (err)
           }) // parseString
@@ -143,10 +162,7 @@ cron.schedule('*/3 * * * *', () => {
         console.error(`Generic Catch: ${e.message}`)
       }
     })
-  }).on('error', e => {
+  })
+  .on("error", e => {
     console.error(`Got error: ${e.message}`)
   })
-
-})
-
-console.log("cron scheduled")
