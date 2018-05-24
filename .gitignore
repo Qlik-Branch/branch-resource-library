@@ -9,3 +9,4 @@ client.pem
 config.js
 credentials.json
 .idea
+.DS_STORE

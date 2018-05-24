@@ -28,9 +28,10 @@
         <input class="form-control" ng-model="email" placeholder="Email" type="email" required>
         <input class="form-control" ng-model="password" placeholder="Password" type="password" required>
         <input class="form-control" placeholder="Confirm Password" type="password" pattern="{{password}}" required>
-        <p style="padding: 20px 5px">Sometimes we'd like to send you un-personal marketing emails that you will delete but we will also keep you
+        <p style="padding: 20px 5px 10px">Sometimes we'd like to send you un-personal marketing emails that you will delete but we will also keep you
           up to date with events and hackathons, are you willing to make that sacrifice?
           <select class="form-control" name="unsubscribed" ng-model="unsubscribed" required ng-options="o.v as o.n for o in [{ n: '---', v: '' },{ n: 'Yes', v: false }, { n: 'No', v: true }]"></select></p>
+          <p style="padding: 5px 5px 20px;">You may opt-out of receiving communications at any time. For further information please see our <a target="_blank" href="https://www.qlik.com/us/legal/cookies-and-privacy-policy">Privacy Policy</a>.</p>
         <div vc-recaptcha theme="'light'" key="model.key" on-create="setWidgetId(widgetId)" on-success="setResponse(response)" on-expire="cbExpiration()" required></div>
         <button class="button-outline-fill" type="submit">Signup</button>
       </form>
