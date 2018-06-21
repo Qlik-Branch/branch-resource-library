@@ -93,9 +93,11 @@ app.use("/images", (req, res, next) => {
   request.get(url).pipe(res)
 })
 app.use((req, res, next) => {
+  res.header("Content-Security-Policy", "default-src 'unsafe-eval' 'unsafe-inline' *")
   res.header("Cache-Control", "no-cache, no-store, must-revalidate");
   res.header("Pragma", "no-cache");
   res.header("Expires", 0);
+  res.header("X-Content-Type-Options","nosniff")
   next();
 });
 
