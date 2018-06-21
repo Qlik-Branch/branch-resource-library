@@ -29,7 +29,8 @@ let outputProfile = (profile, stream) => {
     profile.twitter,
     profile.website,
     getDate(profile.createdate), // date
-    getDate(profile.lastvisit) // date
+    getDate(profile.lastvisit), // date
+    profile.unsubscribed
   ]
   stream.write(`"${line.join('","')}"\r\n`)
 }
@@ -51,7 +52,8 @@ let headers = [
   'twitter',
   'website',
   'createdate', // date
-  'lastvisit' // date
+  'lastvisit', // date
+  'opted_out'
 ]
 
 function GetCsv(stream, params) {
