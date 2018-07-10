@@ -30,7 +30,8 @@ let outputProfile = (profile, stream) => {
     profile.website,
     getDate(profile.createdate), // date
     getDate(profile.lastvisit), // date
-    profile.unsubscribed
+    profile.unsubscribed,
+    profile.ted
   ]
   stream.write(`"${line.join('","')}"\r\n`)
 }
@@ -53,7 +54,8 @@ let headers = [
   'website',
   'createdate', // date
   'lastvisit', // date
-  'opted_out'
+  'opted_out',
+  'ted'
 ]
 
 function GetCsv(stream, params) {

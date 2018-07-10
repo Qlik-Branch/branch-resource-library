@@ -1,20 +1,75 @@
-.spot-image{
+.spot-image {
   position: relative;
   width: 100%;
-  background: url('/resources/new/QlikBranch_headerImage.jpg') left center no-repeat;
+  background: url("/resources/new/QlikBranch_headerImage.jpg") left center
+    no-repeat;
   background-size: cover;
   padding: 80px 0 50px;
 }
 
-.spot-text-background{
+.spot-text-background {
   height: 100%;
 }
 
-.spot-text{
+.ted-image {
+  position: relative;
+  width: 100%;
+  background: url("/resources/ted-hero.jpg") left center no-repeat;
+  background-size: cover;
+  padding: 210px 0 50px;
+}
 
-  font-family: 'ProximaNova-Light';
+.ted-text-background {
+  height: 100%;
+}
+
+.ted-h1 {
+  font-weight: bold;
+  margin-top: 50px;
+}
+
+.ted-byline {
+  color: #999;
+}
+
+.ted-content {
+  padding-bottom: 30px;
+}
+
+.ted-seal {
+  width: 130px;
+  float: left;
+  margin-right: 10px;
+}
+
+.btn-ted {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 10px 70px;
+  font-size: 20px;
+  border-radius: 15px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #f8971d;
+  border: 0;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.spot-text {
+  font-family: "ProximaNova-Light";
   font-weight: 600;
   padding: 60px 0 0 0;
+
+  .ted-heading {
+    font-size: 45px;
+    font-family: inherit;
+    font-weight: bold;
+    color: white;
+    line-height: 45px;
+    z-index: 300;
+    margin: 0;
+  }
 
   img {
     width: 50%;
@@ -44,10 +99,9 @@
       top: -1.6em;
       font-size: 0.3em;
     }
-
   }
 
-  p{
+  p {
     color: white;
     font-size: 26px;
     font-weight: 100;
@@ -79,7 +133,7 @@
   display: inline-block;
   position: relative;
   background-size: contain;
-  background-image: url('/resources/new/QlikBranch_PlaygroundImage.jpg');
+  background-image: url("/resources/new/QlikBranch_PlaygroundImage.jpg");
   background-repeat: no-repeat;
   padding: 0;
   margin: 0 auto;
@@ -106,13 +160,14 @@
 .playground:after {
   padding-top: 37.53%;
   display: block;
-  content: '';
+  content: "";
 }
 
 .featured {
   position: relative;
   width: 100%;
-  background: url('/resources/new/QlikBranch_ProjectsImage.jpg') left center no-repeat;
+  background: url("/resources/new/QlikBranch_ProjectsImage.jpg") left center
+    no-repeat;
   background-size: cover;
   padding: 80px 0 50px;
 
@@ -165,7 +220,8 @@
     cursor: pointer;
   }
 
-  .btn-follow, .btn-follow:hover {
+  .btn-follow,
+  .btn-follow:hover {
     background-color: @heading;
     color: white;
     font-weight: bold;
@@ -176,14 +232,12 @@
 }
 
 .latest-publications {
-
   padding-bottom: 50px;
 
   .latest-publication {
     color: @default-text;
 
     .latest-publication-content {
-
       .latest-publication-image {
         height: 130px;
         max-height: 130px;
@@ -195,7 +249,6 @@
           margin-right: auto;
           max-height: 129px;
         }
-
       }
 
       .more {

@@ -73,6 +73,13 @@
         <a ng-show="users[0].linked_to_github==true" href="/git/unlink" type="button" class="button-outline-fill orange-bg white" name="button">Unlink</a>
       </div>
       <div class="col-md-6">
+        <h2>TED</h2>
+        <p style="padding: 20px 5px">To register your interest in being invited to join the Qlik TED Program, select “Yes” here and save your profile update.
+          <select name="ted" ng-model="users[0].ted" ng-options="o.v as o.n for o in [{ n: '---', v: '' },{ n: 'Yes', v: true }, { n: 'No', v: false }]"></select></p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6" style="margin-left: 50%">
         <h2>Marketing Blurb</h2>
         <p style="padding: 20px 5px">Sometimes we'd like to send you un-personal marketing emails that you will delete but we will also keep you
           up to date with events and hackathons, are you willing to make that sacrifice?

@@ -47,6 +47,12 @@
       templateUrl: "/views/home/index.html",
       controller: "homeController"
     })
+    //TED page
+    .state("TED", {
+      url: "/TED",
+      templateUrl: "/views/ted/ted.html",
+      controller: "homeController"
+    })
     //Terms & Conditions
     .state("tnc", {
       url: "/tnc",

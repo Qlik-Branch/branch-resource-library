@@ -35,6 +35,7 @@ var userProfileSchema = new Schema({
   profilepicture: Buffer,
   github_user: String,
   unsubscribed: Boolean,
+  ted: Boolean,
   branch_firstaccess: {
     type: Boolean,
     default: false
