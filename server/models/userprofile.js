@@ -8,6 +8,8 @@ var userProfileSchema = new Schema({
     required: true,
     unique: true
   },
+  firstname: String,
+  lastname: String,
   fullname: String,
   username: {
     type: String,
@@ -36,6 +38,7 @@ var userProfileSchema = new Schema({
   github_user: String,
   unsubscribed: Boolean,
   ted: Boolean,
+  core: Boolean,
   branch_firstaccess: {
     type: Boolean,
     default: false

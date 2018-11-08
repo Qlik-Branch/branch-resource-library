@@ -14,6 +14,8 @@ let getDate = dateString => {
 let outputProfile = (profile, stream) => {
   let line = [
     profile.email,
+    profile.firstname,
+    profile.lastname,
     profile.fullname,
     profile.username,
     profile.company,
@@ -31,13 +33,16 @@ let outputProfile = (profile, stream) => {
     getDate(profile.createdate), // date
     getDate(profile.lastvisit), // date
     profile.unsubscribed,
-    profile.ted
+    profile.ted,
+    profile.core
   ]
   stream.write(`"${line.join('","')}"\r\n`)
 }
 
 let headers = [
   'email',
+  'firstname',
+  'lastname',
   'fullname',
   'username',
   'company',
@@ -55,7 +60,8 @@ let headers = [
   'createdate', // date
   'lastvisit', // date
   'opted_out',
-  'ted'
+  'ted',
+  'core'
 ]
 
 function GetCsv(stream, params) {
